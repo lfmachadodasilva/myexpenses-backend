@@ -1,0 +1,17 @@
+language: csharp
+solution: MyExpenses.sln
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+mono: none
+dotnet: 2.1
+
+before_script:
+  - dotnet restore
+
+script:
+  - dotnet build /p:Configuration=Release || travis_terminate 1;
+  - dotnet test || travis_terminate 1;
