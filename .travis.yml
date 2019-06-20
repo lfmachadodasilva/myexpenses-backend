@@ -6,6 +6,7 @@ notifications:
     on_success: change
     on_failure: change
 
+dist: bionic
 mono: none
 dotnet: 2.2
 
