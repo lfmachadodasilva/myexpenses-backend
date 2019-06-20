@@ -7,7 +7,7 @@ notifications:
     on_failure: change
 
 mono: none
-dotnet: 2.2
+dotnet: 2.2.502
 
 before_script:
   - dotnet restore
