@@ -7,11 +7,9 @@ notifications:
     on_failure: change
 
 mono: none
-dotnet: 2.2.502
-
-before_script:
-  - dotnet restore
+dotnet: 2.2
 
 script:
+  - dotnet restore
   - dotnet build /p:Configuration=Release || travis_terminate 1;
   - dotnet test || travis_terminate 1;
