@@ -8,7 +8,7 @@ notifications:
 
 dist: bionic
 mono: none
-dotnet: 2.2
+dotnet: 2.2.105
 
 script:
   - dotnet restore
