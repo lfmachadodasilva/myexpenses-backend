@@ -65,4 +65,4 @@ test_script:
 
 # scripts to run after tests
 after_test:
- - codecov -f "TestResult.xml" -t 8189fa02-3bfe-4f22-9a3b-19b8634b05d7
+ - codecov -f "TestResult.xml" -t $CODECOV_TOKEN
