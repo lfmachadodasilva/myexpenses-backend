@@ -1,0 +1,68 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+version: 0.1.{build}-{branch}
+
+# branches to build  
+branches:
+  only:
+  - master
+  - /dev-*/
+  
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+
+# Build worker image (VM template)
+image:
+ - Visual Studio 2017
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+before_build:
+ - nuget restore
+ - appveyor-retry dotnet restore -v quiet
+
+build_script:
+  - dotnet build
+  
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Automatically register private account and/or project AppVeyor NuGet feeds.
+nuget:
+  account_feed: true
+  project_feed: true
+
+#---------------------------------#
+#         notifications           #
+#---------------------------------#
+
+notifications:
+
+# Email
+- provider: Email
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+# scripts to run before tests
+before_test:
+ - choco install opencover.portable
+ - choco install codecov
+ 
+# to run your custom scripts instead of automatic tests
+test_script:
+ - OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test" -output:"TestResult.xml" -oldstyle
+
+# scripts to run after tests
+after_test:
+ - codecov -f "TestResult.xml" -t 8189fa02-3bfe-4f22-9a3b-19b8634b05d7
