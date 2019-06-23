@@ -17,17 +17,23 @@ dotnet: 2.2
 #      secure: "d06f378d059de43bc6afbf3220a6957caf85ed95" # encrypted value of your token
 
 install:
- - git config --global core.autocrlf true
+ #- git config --global core.autocrlf true
  - dotnet tool install --global dotnet-sonarscanner
- - dotnet tool install --global coverlet.console
+ #- dotnet tool install --global coverlet.console
 
 before_script:
  - dotnet restore
  - export PATH="$PATH:$HOME/.dotnet/tools"
 
-script:
- - dotnet sonarscanner begin /k:"lfmachadodasilva_myexpenses-backend" /o:"lfmachadodasilva-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="d06f378d059de43bc6afbf3220a6957caf85ed95" /d:sonar.cs.opencover.reportsPaths="tests\MyExpenses.Core.Api.UnitTests\coverage.opencover.xml"
- - dotnet build
- - dotnet publish
- - dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
- - dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN
+jobs:
+  include:
+    - stage: "Build and Test"
+     script:
+      - dotnet build
+      - dotnet test
+    - stage: "Publish Results"
+     script:
+     - dotnet sonarscanner begin /k:"lfmachadodasilva_myexpenses-backend" /o:"lfmachadodasilva-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml"
+     - dotnet build --no-incremental
+     - dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+     - dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN
