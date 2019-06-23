@@ -21,10 +21,10 @@ image:
 #---------------------------------#
 #       init configuration       #
 #---------------------------------#
-init:
- - cmd: git config --global core.autocrlf true
- - cmd: dotnet tool install -g dotnet-sonarscanner
- - cmd: dotnet tool install -g coverlet.console
+#init:
+# - cmd: git config --global core.autocrlf true
+# - cmd: dotnet tool install -g dotnet-sonarscanner
+# - cmd: dotnet tool install -g coverlet.console
 
 #---------------------------------#
 #       build configuration       #
@@ -67,6 +67,9 @@ notifications:
 before_test:
 # - choco install opencover.portable
 # - choco install codecov
+ - cmd: git config --global core.autocrlf true
+ - cmd: dotnet tool install -g dotnet-sonarscanner
+ - cmd: dotnet tool install -g coverlet.console
  - cmd: dotnet-sonarscanner begin /k:$SONARCLOUD_PROJEC /d:sonar.organization=$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml" /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH
  
 # to run your custom scripts instead of automatic tests
