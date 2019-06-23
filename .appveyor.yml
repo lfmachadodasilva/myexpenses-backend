@@ -1,21 +1,3 @@
-Skip to content
- 
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@lfmachadodasilva 
-0
-0 0 lfmachadodasilva/myexpenses-backend
- Code  Issues 6  Pull requests 0  Projects 1  Wiki  Security  Insights  Settings
-myexpenses-backend/.appveyor.yml
-@lfmachadodasilva lfmachadodasilva Dev #8 appveyor (#12)
-4520b0a 2 days ago
-69 lines (52 sloc)  1.52 KB
-    
 #---------------------------------#
 #      general configuration      #
 #---------------------------------#
