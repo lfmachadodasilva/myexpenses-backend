@@ -17,7 +17,7 @@ dotnet: 2.2
 #      secure: "d06f378d059de43bc6afbf3220a6957caf85ed95" # encrypted value of your token
 
 install:
- #- git config --global core.autocrlf true
+ - git config --global core.autocrlf true
  - dotnet tool install --global dotnet-sonarscanner
  #- dotnet tool install --global coverlet.console
 
