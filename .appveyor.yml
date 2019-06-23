@@ -1,15 +1,33 @@
+Skip to content
+ 
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@lfmachadodasilva 
+0
+0 0 lfmachadodasilva/myexpenses-backend
+ Code  Issues 6  Pull requests 0  Projects 1  Wiki  Security  Insights  Settings
+myexpenses-backend/.appveyor.yml
+@lfmachadodasilva lfmachadodasilva Dev #8 appveyor (#12)
+4520b0a 2 days ago
+69 lines (52 sloc)  1.52 KB
+    
 #---------------------------------#
 #      general configuration      #
 #---------------------------------#
 
 # version format
-version: 0.2.{build}-{branch}
+version: 0.1.{build}-{branch}
 
 # branches to build  
 branches:
   only:
-   - master
-   - /dev-*/
+  - master
+  - /dev-*/
   
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -19,24 +37,15 @@ image:
  - Visual Studio 2017
 
 #---------------------------------#
-#       init configuration       #
-#---------------------------------#
-#init:
-# - cmd: git config --global core.autocrlf true
-# - cmd: dotnet tool install -g dotnet-sonarscanner
-# - cmd: dotnet tool install -g coverlet.console
-
-#---------------------------------#
 #       build configuration       #
 #---------------------------------#
- 
-before_build:
- - cmd: dotnet --version
- - cmd: nuget restore
- - cmd: appveyor-retry dotnet restore -v quiet
 
-#build_script:
-#  - dotnet build
+before_build:
+ - nuget restore
+ - appveyor-retry dotnet restore -v quiet
+
+build_script:
+  - dotnet build
   
 #---------------------------------#
 #    environment configuration    #
@@ -65,29 +74,13 @@ notifications:
 
 # scripts to run before tests
 before_test:
-# - choco install opencover.portable
-# - choco install codecov
- - dotnet clean
- - git config --global core.autocrlf true
- - dotnet tool install --global dotnet-sonarscanner --version 4.3.1
- #- dotnet tool install --global coverlet.console
+ - choco install opencover.portable
+ - choco install codecov
  
 # to run your custom scripts instead of automatic tests
 test_script:
- - dotnet-sonarscanner begin /k:"lfmachadodasilva_myexpenses-backend" /d:sonar.organization=$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="d06f378d059de43bc6afbf3220a6957caf85ed95" /d:sonar.cs.opencover.reportsPaths="tests\MyExpenses.Core.Api.UnitTests\coverage.opencover.xml" /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH /n:"MyExpenses" /d:projectVersion=0.1.{build}-{branch}
- - dotnet build --no-incremental
- - dotnet test /p:Exclude=\"[xunit.*]*\" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
- - dotnet-sonarscanner end /d:sonar.login="d06f378d059de43bc6afbf3220a6957caf85ed95"
- #- OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test" -output:"TestResult.xml" -oldstyle
+ - OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test" -output:"TestResult.xml" -oldstyle
 
 # scripts to run after tests
-#after_test:
- 
- #- codecov -f "TestResult.xml" -t $CODECOV_TOKEN
-
-#on_success:
-# - dotnet tool install --global dotnet-sonarscanner
-# - dotnet sonarscanner begin /n:NGenerics /k:$SONARCLOUD_PROJECT /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults.xml" /v:"2.0"
-# - dotnet build
-# - dotnet test
-# - dotnet sonarscanner end
+after_test:
+ - codecov -f "TestResult.xml" -t $CODECOV_TOKEN

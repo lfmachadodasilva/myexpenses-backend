@@ -21,12 +21,15 @@ script:
  - dotnet build || travis_terminate 1;
  - dotnet test || travis_terminate 1;
 
-#after_script:
-# - dotnet build || travis_terminate 1;
-# - dotnet test || travis_terminate 1;
-#jobs:
-#    include:
-#        - stage: buildAndTest
+after_success:
+ - dotnet sonarscanner begin /k:$SONARCLOUD_PROJECT /o:"lfmachadodasilva-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml" /d:sonar.branch.name=$TRAVIS_BRANCH
+ - dotnet build --no-incremental
+ - dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+ - dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN
+
+#- dotnet build --no-incrementaljobs:
+#- dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover    include:
+#- dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN        - stage: buildAndTest
 #            - script: dotnet build
 #            - script: dotnet test
 #        - stage: buildAndTest2
