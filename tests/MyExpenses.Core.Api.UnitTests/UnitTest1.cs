@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,16 @@ namespace MyExpenses.Core.Api.UnitTests
             actual
                 .Should().BeOfType<OkObjectResult>()
                 .Which.Value.Should().Be("value");
+        }
+
+        [Fact]
+        public async Task Post()
+        {
+            // act
+            var actual = _valuesController.Post(It.IsAny<string>());
+
+            Func<Task> sutMethod = async () => { await actual; };
+            await sutMethod.Should().NotThrowAsync<Exception>();
         }
     }
 }
