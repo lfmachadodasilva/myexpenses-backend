@@ -19,7 +19,7 @@ before_script:
  - dotnet restore
 
 script:
- - sonar-scanner begin /k:$SONARCLOUD_PROJECT /o:$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml" /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH
+ - sonar-scanner begin /k:$SONARCLOUD_PROJECT /o:$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\MyExpenses.Core.Api.UnitTests\coverage.opencover.xml"
  - dotnet build || travis_terminate 1;
  - dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
  - sonar-scanner end /d:sonar.login=$SONARCLOUD_TOKEN
