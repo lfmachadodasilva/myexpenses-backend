@@ -10,11 +10,11 @@ dist: bionic
 mono: none
 dotnet: 2.2
 
-addons:
-  sonarcloud:
-    organization: "lfmachadodasilva-github" # the key of the org you chose at step #3
-    token:
-      secure: "d06f378d059de43bc6afbf3220a6957caf85ed95" # encrypted value of your token
+#addons:
+#  sonarcloud:
+#    organization: "lfmachadodasilva-github" # the key of the org you chose at step #3
+#    token:
+#      secure: "d06f378d059de43bc6afbf3220a6957caf85ed95" # encrypted value of your token
 
 install:
  - git config --global core.autocrlf true
