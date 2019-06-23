@@ -26,8 +26,8 @@ before_script:
  - export PATH="$PATH:$HOME/.dotnet/tools"
 
 script:
- - sonar-scanner begin begin /k:"lfmachadodasilva_myexpenses-backend" /d:sonar.organization="lfmachadodasilva-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\MyExpenses.Core.Api.UnitTests\coverage.opencover.xml"
+ - dotnet sonarscanner begin /k:"lfmachadodasilva_myexpenses-backend" /d:sonar.organization="lfmachadodasilva-github" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\MyExpenses.Core.Api.UnitTests\coverage.opencover.xml"
  - dotnet build
  - dotnet publish
  - dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
- - sonar-scanner end /d:sonar.login=$SONARCLOUD_TOKEN
+ - dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN
