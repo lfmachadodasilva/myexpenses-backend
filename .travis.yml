@@ -10,6 +10,12 @@ dist: bionic
 mono: none
 dotnet: 2.2
 
+addons:
+  sonarcloud:
+    organization: $SONARCLOUD_ORGANIZATION
+    token:
+      secure: $SONARCLOUD_TOKEN
+
 install:
  - git config --global core.autocrlf true
  - dotnet tool install --global dotnet-sonarscanner
@@ -19,7 +25,7 @@ before_script:
  - dotnet restore
 
 script:
- - dotnet sonarscanner begin /k:$SONARCLOUD_PROJECT /o:$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml" /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH
+ - sonar-scanner begin /k:$SONARCLOUD_PROJECT /o:$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml" /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH
  - dotnet build || travis_terminate 1;
  - dotnet test /p:Exclude="$TEST_EXCLUDE" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
- - dotnet sonarscanner end /d:sonar.login=$SONARCLOUD_TOKEN
+ - sonar-scanner end /d:sonar.login=$SONARCLOUD_TOKEN
