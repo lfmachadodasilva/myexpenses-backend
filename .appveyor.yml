@@ -35,8 +35,8 @@ before_build:
  - cmd: nuget restore
  - cmd: appveyor-retry dotnet restore -v quiet
 
-build_script:
-  - dotnet build
+#build_script:
+#  - dotnet build
   
 #---------------------------------#
 #    environment configuration    #
@@ -75,8 +75,8 @@ before_test:
 # to run your custom scripts instead of automatic tests
 test_script:
  - dotnet-sonarscanner begin /k:"lfmachadodasilva_myexpenses-backend" /d:sonar.organization=$SONARCLOUD_ORGANIZATION /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="d06f378d059de43bc6afbf3220a6957caf85ed95" /d:sonar.cs.opencover.reportsPaths="tests\**\coverage.opencover.xml" /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH /n:"MyExpenses" /d:projectVersion=0.1.{build}-{branch}
- - dotnet build tests\MyExpenses.Core.Api.UnitTests\MyExpenses.Core.Api.UnitTests.csproj
- - dotnet test tests\MyExpenses.Core.Api.UnitTests\MyExpenses.Core.Api.UnitTests.csproj /p:Exclude=\"[xunit.*]*\" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+ - dotnet build
+ - dotnet test /p:Exclude=\"[xunit.*]*\" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
  - dotnet-sonarscanner end /d:sonar.login="d06f378d059de43bc6afbf3220a6957caf85ed95"
  #- OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test" -output:"TestResult.xml" -oldstyle
 
