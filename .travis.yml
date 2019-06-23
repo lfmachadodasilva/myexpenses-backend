@@ -19,7 +19,8 @@ before_script:
 
 jobs:
     include:
-        - stage: "Build and Test"
+        - stage: 
+            - name: "Build and Test"
             - script: dotnet build
             - script: dotnet test
         #- stage: "Publish Results"
