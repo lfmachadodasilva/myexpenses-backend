@@ -69,7 +69,7 @@ before_test:
 # - choco install codecov
  - git config --global core.autocrlf true
  - dotnet tool install --global dotnet-sonarscanner --version 4.3.1
- - dotnet tool install --global coverlet.console
+ #- dotnet tool install --global coverlet.console
  
 # to run your custom scripts instead of automatic tests
 test_script:
