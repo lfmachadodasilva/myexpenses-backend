@@ -19,12 +19,10 @@ before_script:
 
 jobs:
     include:
-        - stage: 
-            - name: "Build and Test"
+        - stage: "Build and Test"
             - script: dotnet build
             - script: dotnet test
-        - stage: 
-            - name: "Build and Test"
+        - stage: "Build and Test 2"
             - script: dotnet build --no-incremental
             - script: dotnet test
         #- stage: "Publish Results"
