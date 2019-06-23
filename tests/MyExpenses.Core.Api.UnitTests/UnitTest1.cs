@@ -1,3 +1,7 @@
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 using MyExpenses.Core.Api.Controllers;
 using Xunit;
 
@@ -13,9 +17,33 @@ namespace MyExpenses.Core.Api.UnitTests
         }
 
         [Fact]
-        public void Test1()
+        public void NotNull()
         {
             Assert.NotNull(_valuesController);
+        }
+
+        [Fact]
+        public async Task GetAll()
+        {
+            // act
+            var actual = await _valuesController.Get();
+
+            // assert
+            actual
+                .Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().BeEquivalentTo(new string[] { "value1", "value2" });
+        }
+
+        [Fact]
+        public async Task Get()
+        {
+            // act
+            var actual = await _valuesController.Get(It.IsAny<int>());
+
+            // assert
+            actual
+                .Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().Be("value");
         }
     }
 }
