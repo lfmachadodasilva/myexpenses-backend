@@ -11,6 +11,9 @@ mono: none
 dotnet: 2.2
 
 script:
-  - dotnet restore
-  - dotnet build /p:Configuration=Release || travis_terminate 1;
-  - dotnet test || travis_terminate 1;
+ - dotnet restore
+ - dotnet build /p:Configuration=Release || travis_terminate 1;
+ - dotnet test || travis_terminate 1;
+ - git config --global core.autocrlf true
+ - dotnet tool install --global dotnet-sonarscanner
+ - dotnet tool install --global coverlet.console
