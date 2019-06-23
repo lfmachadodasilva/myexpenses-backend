@@ -21,9 +21,9 @@ script:
  - dotnet build || travis_terminate 1;
  - dotnet test || travis_terminate 1;
 
-after_script:
- - dotnet build || travis_terminate 1;
- - dotnet test || travis_terminate 1;
+#after_script:
+# - dotnet build || travis_terminate 1;
+# - dotnet test || travis_terminate 1;
 #jobs:
 #    include:
 #        - stage: buildAndTest
