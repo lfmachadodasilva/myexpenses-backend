@@ -10,12 +10,6 @@ dist: bionic
 mono: none
 dotnet: 2.2
 
-addons:
-  sonarcloud:
-    organization: $SONARCLOUD_ORGANIZATION
-    token:
-      secure: $SONARCLOUD_TOKEN
-
 install:
  - git config --global core.autocrlf true
  - dotnet tool install --global dotnet-sonarscanner
