@@ -25,6 +25,7 @@ image:
 before_build:
  - nuget restore
  - appveyor-retry dotnet restore -v quiet
+ - dotnet tool install --global dotnet-sonarscanner
 
 build_script:
   - dotnet build
@@ -66,3 +67,9 @@ test_script:
 # scripts to run after tests
 after_test:
  - codecov -f "TestResult.xml" -t $CODECOV_TOKEN
+
+ on_success:
+  - dotnet sonarscanner begin /n:NGenerics /k:$SONARCLOUD_PROJECT /d:sonar.branch.name=$APPVEYOR_REPO_BRANCH /d:sonar.login=$SONARCLOUD_TOKEN /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults.xml" /v:"2.0"
+  - dotnet build
+  - dotnet test
+  - dotnet sonarscanner end
