@@ -236,3 +236,4 @@ _Pvt_Extensions
 .fake/
 .vs
 .sonarqube
+tests/**/coverage.opencover.xml
