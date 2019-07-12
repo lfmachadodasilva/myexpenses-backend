@@ -12,16 +12,20 @@ namespace MyExpenses.Core.Api.Controllers
     [ApiController]
     public class LabelsController : ControllerBase
     {
-        private readonly ICollection<LabelDto> _labels = new List<LabelDto>();
+        private static ICollection<LabelDto> _labels;
         public LabelsController()
         {
-            for (int i = 0; i < 20; i++)
+            if(_labels == null)
             {
-                _labels.Add(new LabelDto
+                _labels = new List<LabelDto>();
+                for (int i = 0; i < 20; i++)
                 {
-                    Id = i,
-                    Name = $"LabelName{i}"
-                });
+                    _labels.Add(new LabelDto
+                    {
+                        Id = i,
+                        Name = $"LabelName{i}"
+                    });
+                }
             }
         }
 
@@ -46,12 +50,13 @@ namespace MyExpenses.Core.Api.Controllers
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> Post([FromBody] LabelDto value)
         {
+            value.Id = _labels.Count();
             _labels.Add(value);
             return Ok(value);
         }
 
         // PUT api/values/5
-        [HttpPut("{id}")]
+        [HttpPut()]
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> Put([FromBody] LabelDto value)
         {
