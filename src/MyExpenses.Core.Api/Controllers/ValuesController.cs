@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MyExpenses.Core.Api.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
