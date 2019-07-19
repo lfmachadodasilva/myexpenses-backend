@@ -1,4 +1,4 @@
-﻿namespace MyExpenses.Core.Api.Models
+﻿namespace lfmachadodasilva.MyExpenses.Api.Models
 {
     public class LabelDto
     {

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using lfmachadodasilva.MyExpenses.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MyExpenses.Core.Api.Models;
 
-namespace MyExpenses.Core.Api.Controllers
+namespace lfmachadodasilva.MyExpenses.Api.Controllers
 {
     [Route("api/[controller]")]
     [Produces("application/json")]
