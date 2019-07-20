@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using lfmachadodasilva.MyExpenses.Api.Models;
@@ -17,13 +18,17 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             if(_labels == null)
             {
+                Random rnd = new Random();
                 _labels = new List<LabelDto>();
                 for (int i = 0; i < 20; i++)
                 {
                     _labels.Add(new LabelDto
                     {
                         Id = i,
-                        Name = $"LabelName{i}"
+                        Name = $"LabelName{i}",
+                        CurrentValue = rnd.Next(1, 250),
+                        AverageValue = rnd.Next(1, 250),
+                        LastValue = rnd.Next(1, 250)
                     });
                 }
             }
@@ -51,6 +56,12 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         public async Task<IActionResult> Post([FromBody] LabelDto value)
         {
             value.Id = _labels.Count();
+
+            Random rnd = new Random();
+            value.CurrentValue = rnd.Next(1, 250);
+            value.AverageValue = rnd.Next(1, 250);
+            value.LastValue = rnd.Next(1, 250);
+
             _labels.Add(value);
             return Ok(value);
         }

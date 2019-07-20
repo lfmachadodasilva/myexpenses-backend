@@ -45,7 +45,8 @@ namespace lfmachadodasilva.MyExpenses.Api
             }
 
             app.UseCors(builder => builder
-                .WithOrigins("http://localhost:4200")
+                //.WithOrigins("http://*.*.*.*:4200")
+                .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
