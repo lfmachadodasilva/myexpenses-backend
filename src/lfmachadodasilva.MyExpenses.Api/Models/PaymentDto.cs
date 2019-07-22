@@ -1,6 +1,6 @@
 ﻿namespace lfmachadodasilva.MyExpenses.Api.Models
 {
-    public class LabelDto
+    public class PaymentDto
     {
         public long Id { get; set; }
 
@@ -10,7 +10,7 @@
         public long GroupId { get; set; }
     }
 
-    public class LabelWithValuesDto : LabelDto
+    public class PaymentWithValueDto : PaymentDto
     {
         public decimal CurrentValue { get; set; }
 
