@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace MyExpenses.Core.Api
+namespace lfmachadodasilva.MyExpenses.Api
 {
     public class Startup
     {
@@ -20,6 +20,7 @@ namespace MyExpenses.Core.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddCors()
                 .AddSwaggerGen(c =>
                 {
                     c.SwaggerDoc(
@@ -42,6 +43,13 @@ namespace MyExpenses.Core.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder
+                //.WithOrigins("http://*.*.*.*:4200")
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
