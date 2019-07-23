@@ -1,4 +1,4 @@
-﻿namespace lfmachadodasilva.MyExpenses.Api.Models
+﻿namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
 {
     public class GroupDto
     {

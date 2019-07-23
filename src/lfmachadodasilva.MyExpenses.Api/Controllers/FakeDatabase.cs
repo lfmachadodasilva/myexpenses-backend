@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using lfmachadodasilva.MyExpenses.Api.Models;
+using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 
 namespace lfmachadodasilva.MyExpenses.Api.Controllers
 {

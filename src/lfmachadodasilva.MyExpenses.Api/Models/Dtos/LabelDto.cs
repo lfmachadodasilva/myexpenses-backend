@@ -1,16 +1,14 @@
-﻿namespace lfmachadodasilva.MyExpenses.Api.Models
+﻿namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
 {
-    public class PaymentDto
+    public class LabelDto : DtoBase
     {
-        public long Id { get; set; }
-
         public string Name { get; set; }
 
         // Relations
         public long GroupId { get; set; }
     }
 
-    public class PaymentWithValueDto : PaymentDto
+    public class LabelWithValuesDto : LabelDto
     {
         public decimal CurrentValue { get; set; }
 

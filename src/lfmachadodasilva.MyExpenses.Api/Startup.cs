@@ -1,4 +1,6 @@
-﻿using lfmachadodasilva.MyExpenses.Api.Controllers;
+﻿using AutoMapper;
+using lfmachadodasilva.MyExpenses.Api.Controllers;
+using lfmachadodasilva.MyExpenses.Api.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +39,10 @@ namespace lfmachadodasilva.MyExpenses.Api
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.TryAddSingleton(new MapperConfiguration(cfg => cfg.AddProfile<MyExpensesProfile>()).CreateMapper());
             services.TryAddSingleton<FakeDatabase, FakeDatabase>();
+
+            services.TryAddTransient<ILabelRepository, LabelRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
