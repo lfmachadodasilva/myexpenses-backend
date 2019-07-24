@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
+using lfmachadodasilva.MyExpenses.Api.Properties;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +50,10 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> Add([FromBody] LabelDto value)
         {
+            if(value.Name == "duplicate")
+            {
+                return Conflict(Resource.ErrorDuplicate);
+            }
             var task = Task.Run(() =>
             {
                 value.Id = FakeDatabase.Labels.Count();
@@ -76,6 +82,11 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> Edit([FromBody] LabelDto value)
         {
+            if (value.Name == "duplicate")
+            {
+                return Conflict(Resource.ErrorDuplicate);
+            }
+
             var task = Task.Run(() =>
             {
                 var label = FakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(value.Id));
