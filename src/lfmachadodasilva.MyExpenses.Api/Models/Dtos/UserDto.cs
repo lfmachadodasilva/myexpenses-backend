@@ -1,6 +1,6 @@
-﻿namespace lfmachadodasilva.MyExpenses.Api.Models
+﻿namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
 {
-    public class GroupDto
+    public class UserDto
     {
         public long Id { get; set; }
 

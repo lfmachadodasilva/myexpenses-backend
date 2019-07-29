@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using lfmachadodasilva.MyExpenses.Api.Models;
+using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
 using lfmachadodasilva.MyExpenses.Api.Properties;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +20,24 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         }
 
         // GET api/values
-        [HttpGet]
+        [HttpGet("withValues")]
         [ProducesResponseType(typeof(LabelWithValuesDto[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll([FromQuery]SearchRequest request)
+        public async Task<IActionResult> GetAllWithValues([FromQuery]SearchRequest request)
         {
             var task = Task.Run(() =>
             {
                 return FakeDatabase.Labels.Where(x => x.GroupId.Equals(request.GroupId));
+            });
+            return Ok(await task);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(LabelWithValuesDto[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll([FromQuery][Required] long groupId)
+        {
+            var task = Task.Run(() =>
+            {
+                return FakeDatabase.Labels.Where(x => x.GroupId.Equals(groupId));
             });
             return Ok(await task);
         }
@@ -66,7 +76,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
                     GroupId = value.GroupId,
                     CurrentValue = rnd.Next(1, 250),
                     AverageValue = rnd.Next(1, 250),
-                    LastValue = rnd.Next(1, 250)
+                    LastValue = rnd.Next(1, 250),
                 };
 
                 FakeDatabase.Labels.Add(withValues);
