@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using lfmachadodasilva.MyExpenses.Api.Models;
+using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
 using lfmachadodasilva.MyExpenses.Api.Properties;
 using Microsoft.AspNetCore.Http;
