@@ -1,9 +1,11 @@
-﻿namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
-{
-    public class UserDto
-    {
-        public long Id { get; set; }
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
+{
+    public class UserDto : DtoBase
+    {
         public string Name { get; set; }
+
+        public string Email { get; set; }
     }
 }
