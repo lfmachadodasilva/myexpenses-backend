@@ -9,11 +9,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
         Outcoming
     }
 
-    public class ExpenseDto
+    public class ExpenseDto : DtoBase
     {
-        [Required]
-        public long Id { get; set; }
-
         [Required]
         public string Name { get; set; }
 
