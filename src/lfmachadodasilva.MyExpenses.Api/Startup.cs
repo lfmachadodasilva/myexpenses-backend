@@ -1,7 +1,13 @@
-﻿using lfmachadodasilva.MyExpenses.Api.Controllers;
+﻿using AutoMapper;
+using lfmachadodasilva.MyExpenses.Api.Controllers;
+using lfmachadodasilva.MyExpenses.Api.Models;
+using lfmachadodasilva.MyExpenses.Api.Models.Config;
+using lfmachadodasilva.MyExpenses.Api.Repositories;
+using lfmachadodasilva.MyExpenses.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -36,6 +42,33 @@ namespace lfmachadodasilva.MyExpenses.Api
                 })
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.TryAddTransient<IExpenseRepository, ExpenseRepository>();
+            services.TryAddTransient<ILabelRepository, LabelRepository>();
+            services.TryAddTransient<IGroupRepository, GroupRepository>();
+            services.TryAddTransient<IUserRepository, UserRepository>();
+
+            services.TryAddTransient<IExpenseService, ExpenseService>();
+            services.TryAddTransient<ILabelService, LabelService>();
+            services.TryAddTransient<IGroupService, GroupService>();
+            services.TryAddTransient<IUserService, UserService>();
+            services.TryAddTransient<IReportService, ReportService>();
+
+            services.TryAddTransient<IUnitOfWork, UnitOfWork>();
+            services.TryAddTransient<IMyExpensesSeed, MyExpensesSeed>();
+
+            services.AddAutoMapper(typeof(MyExpensesProfile));
+
+            services.Configure<WebSettingsConfig>(Configuration.GetSection("WebSettings"));
+            services.TryAddTransient<IWebSettings, WebSettings>();
+
+            var migrationAssembly = Configuration.GetSection("MigrationAssembly").Value;
+            var connection = Configuration.GetConnectionString("DefaultConnection");
+
+            services
+                .AddDbContext<MyExpensesContext>(options =>
+                    options.UseNpgsql(connection,
+                        x => x.MigrationsAssembly(migrationAssembly)));
 
             services.TryAddSingleton<FakeDatabase, FakeDatabase>();
         }

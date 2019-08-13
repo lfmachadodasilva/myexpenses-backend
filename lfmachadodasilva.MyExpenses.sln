@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.539
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2CF569FF-0D7C-417A-B281-75F02BEB678D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3CB4C0AE-89FA-4A06-9CEC-5EAC7F4C79CE}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{B9EF416B-8003-4563-BEDD-0C87E8EE2ACA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lfmachadodasilva.MyExpenses.Api", "src\lfmachadodasilva.MyExpenses.Api\lfmachadodasilva.MyExpenses.Api.csproj", "{F436C759-55BE-4ECA-B7AD-31B11E14E3B1}"
 EndProject

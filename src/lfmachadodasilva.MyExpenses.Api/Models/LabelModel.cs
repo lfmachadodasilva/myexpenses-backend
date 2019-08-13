@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace lfmachadodasilva.MyExpenses.Api.Models
 {
@@ -9,5 +10,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
 
         // Relations
         public long GroupId { get; set; }
+
+        public IEnumerable<ExpenseModel> Expenses { get; set; }
     }
 }

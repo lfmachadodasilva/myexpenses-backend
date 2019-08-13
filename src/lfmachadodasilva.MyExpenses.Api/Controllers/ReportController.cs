@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
+using lfmachadodasilva.MyExpenses.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,8 +15,13 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
     [ApiController]
     public class ReportController : ControllerBase
     {
-        public ReportController(FakeDatabase db)
+        private readonly IReportService _reportService;
+        private readonly FakeDatabase _fakeDatabase;
+
+        public ReportController(IReportService reportService, FakeDatabase fakeDatabase)
         {
+            _reportService = reportService;
+            _fakeDatabase = fakeDatabase;
         }
 
         // GET
@@ -26,7 +33,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
             {
                 var report = new ReportDto();
 
-                var expenses = FakeDatabase.Expenses
+                var expenses = _fakeDatabase.Expenses
                     .Where(e => e.Date.Year.Equals(request.Year) && e.GroupId.Equals(request.GroupId));
 
                 report.ByLabel = expenses
