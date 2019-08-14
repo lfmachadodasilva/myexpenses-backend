@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Properties;
+using lfmachadodasilva.MyExpenses.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,8 +15,18 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
-        public GroupsController(FakeDatabase db)
+        private readonly IGroupService _groupService;
+        private readonly IWebSettings _webSettings;
+        private readonly FakeDatabase _fakeDatabase;
+
+        public GroupsController(
+            IGroupService groupService,
+            IWebSettings webSettings,
+            FakeDatabase fakeDatabase)
         {
+            _groupService = groupService;
+            _webSettings = webSettings;
+            _fakeDatabase = fakeDatabase;
         }
 
         // GET api/values
@@ -23,11 +35,16 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         public async Task<IActionResult> GetAll()
         {
             const long userId = 0;
-            var task = Task.Run(() =>
+            if (_webSettings.UseFakeDatabase)
             {
-                return FakeDatabase.Groups.Where(x => x.Users.Any(y => y.Id.Equals(userId)));
-            });
-            return Ok(await task);
+                var task = Task.Run(() =>
+                {
+                    return _fakeDatabase.Groups.Where(x => x.Users.Any(y => y.Id.Equals(userId)));
+                });
+                return Ok(await task);
+            }
+
+            return Ok(await _groupService.GetAllAsync(userId));
         }
 
         // GET api/values/5
@@ -37,7 +54,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             var task = Task.Run(() =>
             {
-                return FakeDatabase.Groups.FirstOrDefault(x => x.Id.Equals(id));
+                return _fakeDatabase.Groups.FirstOrDefault(x => x.Id.Equals(id));
 
             });
             return Ok(await task);
@@ -54,16 +71,16 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
             }
             var task = Task.Run(() =>
             {
-                value.Id = FakeDatabase.Groups.Count;
+                value.Id = _fakeDatabase.Groups.Count;
 
                 var withValues = new GroupDto
                 {
-                    Id = FakeDatabase.Groups.Count,
+                    Id = _fakeDatabase.Groups.Count,
                     Name = value.Name,
                     Users = value.Users
                 };
 
-                FakeDatabase.Groups.Add(withValues);
+                _fakeDatabase.Groups.Add(withValues);
 
                 return withValues;
             });
@@ -83,7 +100,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
 
             var task = Task.Run(() =>
             {
-                var obj = FakeDatabase.Groups.FirstOrDefault(x => x.Id.Equals(value.Id));
+                var obj = _fakeDatabase.Groups.FirstOrDefault(x => x.Id.Equals(value.Id));
                 obj.Name = value.Name;
                 obj.Users = value.Users;
 
@@ -100,8 +117,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             var task = Task.Run(() =>
             {
-                var obj = FakeDatabase.Groups.FirstOrDefault(x => x.Id.Equals(id));
-                FakeDatabase.Groups.Remove(obj);
+                var obj = _fakeDatabase.Groups.FirstOrDefault(x => x.Id.Equals(id));
+                _fakeDatabase.Groups.Remove(obj);
             });
             await task;
         }

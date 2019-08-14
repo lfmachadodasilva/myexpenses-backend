@@ -1,8 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 
-namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
+namespace lfmachadodasilva.MyExpenses.Api.Models
 {
     [Table("Expense")]
     public class ExpenseModel : ModelBase
@@ -23,8 +24,14 @@ namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
 
         public long LabelId { get; set; }
 
+        [ForeignKey("LabelId")]
+        public LabelModel Label { get; set; }
+
         [Required]
         public long GroupId { get; set; }
+
+        [ForeignKey("GroupId")]
+        public LabelModel Group { get; set; }
 
         #endregion
     }

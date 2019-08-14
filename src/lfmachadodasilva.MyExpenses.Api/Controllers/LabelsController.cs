@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
 using lfmachadodasilva.MyExpenses.Api.Properties;
+using lfmachadodasilva.MyExpenses.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,8 +16,13 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
     [ApiController]
     public class LabelsController : ControllerBase
     {
-        public LabelsController(FakeDatabase db)
+        private readonly ILabelService _labelService;
+        private readonly FakeDatabase _fakeDatabase;
+
+        public LabelsController(ILabelService labelService, FakeDatabase fakeDatabase)
         {
+            _labelService = labelService;
+            _fakeDatabase = fakeDatabase;
         }
 
         // GET api/values
@@ -26,7 +32,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             var task = Task.Run(() =>
             {
-                return FakeDatabase.Labels.Where(x => x.GroupId.Equals(request.GroupId));
+                return _fakeDatabase.Labels.Where(x => x.GroupId.Equals(request.GroupId));
             });
             return Ok(await task);
         }
@@ -37,7 +43,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             var task = Task.Run(() =>
             {
-                return FakeDatabase.Labels.Where(x => x.GroupId.Equals(groupId));
+                return _fakeDatabase.Labels.Where(x => x.GroupId.Equals(groupId));
             });
             return Ok(await task);
         }
@@ -49,7 +55,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             var task = Task.Run(() =>
             {
-                return FakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(id));
+                return _fakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(id));
 
             });
             return Ok(await task);
@@ -66,12 +72,12 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
             }
             var task = Task.Run(() =>
             {
-                value.Id = FakeDatabase.Labels.Count();
+                value.Id = _fakeDatabase.Labels.Count();
 
                 Random rnd = new Random();
                 var withValues = new LabelWithValuesDto
                 {
-                    Id = FakeDatabase.Labels.Count(),
+                    Id = _fakeDatabase.Labels.Count(),
                     Name = value.Name,
                     GroupId = value.GroupId,
                     CurrentValue = rnd.Next(1, 250),
@@ -79,7 +85,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
                     LastValue = rnd.Next(1, 250),
                 };
 
-                FakeDatabase.Labels.Add(withValues);
+                _fakeDatabase.Labels.Add(withValues);
 
                 return withValues;
             });
@@ -99,7 +105,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
 
             var task = Task.Run(() =>
             {
-                var label = FakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(value.Id));
+                var label = _fakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(value.Id));
                 label.Name = value.Name;
 
                 return label;
@@ -115,8 +121,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         {
             var task = Task.Run(() =>
             {
-                var label = FakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(id));
-                FakeDatabase.Labels.Remove(label);
+                var label = _fakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(id));
+                _fakeDatabase.Labels.Remove(label);
             });
             await task;
         }

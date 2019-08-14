@@ -3,12 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
 {
-    public enum ExpenseType
-    {
-        Incoming = 0,
-        Outcoming
-    }
-
     public class ExpenseDto : DtoBase
     {
         [Required]
@@ -36,9 +30,5 @@ namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
     public class ExpenseWithValuesDto : ExpenseDto
     {
         public string LabelName { get; set; }
-
-        public decimal LastValue { get; set; }
-
-        public decimal AverageValue { get; set; }
     }
 }

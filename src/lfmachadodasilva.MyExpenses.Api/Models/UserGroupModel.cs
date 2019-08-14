@@ -8,9 +8,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
     public class UserGroupModel
     {
         [Key]
-        public Guid GroupId { get; set; }
+        public long GroupId { get; set; }
 
         [Key]
-        public Guid UserId { get; set; }
+        public long UserId { get; set; }
     }
 }
