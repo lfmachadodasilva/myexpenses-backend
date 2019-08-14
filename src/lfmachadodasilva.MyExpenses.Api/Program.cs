@@ -8,7 +8,9 @@ namespace lfmachadodasilva.MyExpenses.Api
     {
         public static void Main(string[] args)
         {
-            var host = CreateWebHostBuilder(args).Build();
+            var host = CreateWebHostBuilder(args)
+                .UseUrls("http://0.0.0.0:4300")
+                .Build();
 
             using (var scope = host.Services.CreateScope())
             {
