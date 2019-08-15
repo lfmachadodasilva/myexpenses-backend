@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
-using lfmachadodasilva.MyExpenses.Api.Properties;
 using lfmachadodasilva.MyExpenses.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

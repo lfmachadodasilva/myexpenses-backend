@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 
 namespace lfmachadodasilva.MyExpenses.Api.Models
 {
