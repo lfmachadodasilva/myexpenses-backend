@@ -12,12 +12,10 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly FakeDatabase _fakeDatabase;
 
-        public UsersController(IUserService userService, FakeDatabase fakeDatabase)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
-            _fakeDatabase = fakeDatabase;
         }
 
         // GET api/values
@@ -25,8 +23,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(UserDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
-            var task = Task.Run(() => _fakeDatabase.Users);
-            return Ok(await task);
+            var users = await _userService.GetAllAsync();
+            return Ok(users);
         }
     }
 }

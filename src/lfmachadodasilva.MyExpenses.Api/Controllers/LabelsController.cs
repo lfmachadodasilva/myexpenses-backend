@@ -1,10 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
-using lfmachadodasilva.MyExpenses.Api.Properties;
 using lfmachadodasilva.MyExpenses.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +14,10 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
     public class LabelsController : ControllerBase
     {
         private readonly ILabelService _labelService;
-        private readonly FakeDatabase _fakeDatabase;
 
-        public LabelsController(ILabelService labelService, FakeDatabase fakeDatabase)
+        public LabelsController(ILabelService labelService)
         {
             _labelService = labelService;
-            _fakeDatabase = fakeDatabase;
         }
 
         // GET api/values
@@ -30,22 +25,16 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(LabelWithValuesDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllWithValues([FromQuery]SearchRequest request)
         {
-            var task = Task.Run(() =>
-            {
-                return _fakeDatabase.Labels.Where(x => x.GroupId.Equals(request.GroupId));
-            });
-            return Ok(await task);
+            var labels = await _labelService.GetAllWithValues(request.GroupId, request.Month, request.Year);
+            return Ok(labels);
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(LabelWithValuesDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery][Required] long groupId)
         {
-            var task = Task.Run(() =>
-            {
-                return _fakeDatabase.Labels.Where(x => x.GroupId.Equals(groupId));
-            });
-            return Ok(await task);
+            var labels = await _labelService.GetAll(groupId);
+            return Ok(labels);
         }
 
         // GET api/values/5
@@ -53,12 +42,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
-            var task = Task.Run(() =>
-            {
-                return _fakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(id));
-
-            });
-            return Ok(await task);
+            var label = await _labelService.GetByIdAsync(id);
+            return Ok(label);
         }
 
         // POST api/values
@@ -66,31 +51,14 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> Add([FromBody] LabelDto value)
         {
-            if(value.Name == "duplicate")
-            {
-                return Conflict(Resource.ErrorDuplicate);
-            }
-            var task = Task.Run(() =>
-            {
-                value.Id = _fakeDatabase.Labels.Count();
+            // TODO
+            //if(value.Name == "duplicate")
+            //{
+            //    return Conflict(Resource.ErrorDuplicate);
+            //}
 
-                Random rnd = new Random();
-                var withValues = new LabelWithValuesDto
-                {
-                    Id = _fakeDatabase.Labels.Count(),
-                    Name = value.Name,
-                    GroupId = value.GroupId,
-                    CurrentValue = rnd.Next(1, 250),
-                    AverageValue = rnd.Next(1, 250),
-                    LastValue = rnd.Next(1, 250),
-                };
-
-                _fakeDatabase.Labels.Add(withValues);
-
-                return withValues;
-            });
-                
-            return Ok(await task);
+            var label = await _labelService.AddAsync(value);
+            return Ok(label);
         }
 
         // PUT api/values/5
@@ -98,20 +66,14 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> Edit([FromBody] LabelDto value)
         {
-            if (value.Name == "duplicate")
-            {
-                return Conflict(Resource.ErrorDuplicate);
-            }
+            // TODO
+            //if (value.Name == "duplicate")
+            //{
+            //    return Conflict(Resource.ErrorDuplicate);
+            //}
 
-            var task = Task.Run(() =>
-            {
-                var label = _fakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(value.Id));
-                label.Name = value.Name;
-
-                return label;
-            });
-                
-            return Ok(await task);
+            var label = await _labelService.UpdateAsync(value);
+            return Ok(label);
         }
 
         // DELETE api/values/5
@@ -119,12 +81,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         public async Task Delete(int id)
         {
-            var task = Task.Run(() =>
-            {
-                var label = _fakeDatabase.Labels.FirstOrDefault(x => x.Id.Equals(id));
-                _fakeDatabase.Labels.Remove(label);
-            });
-            await task;
+            await _labelService.RemoveAsync(id);
         }
     }
 }

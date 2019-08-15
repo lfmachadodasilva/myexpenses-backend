@@ -9,6 +9,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Models.Config
     {
         public bool ClearDatabaseAndSeedData { get; set; }
 
-        public bool UseFakeDatabase { get; set; }
+        public bool UseInMemoryDatabase { get; set; }
+
+        public long DefaultUserId { get; set; }
     }
 }

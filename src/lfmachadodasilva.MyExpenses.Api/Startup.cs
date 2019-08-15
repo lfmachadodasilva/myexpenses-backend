@@ -54,7 +54,7 @@ namespace lfmachadodasilva.MyExpenses.Api
             services.TryAddTransient<IUserService, UserService>();
             services.TryAddTransient<IReportService, ReportService>();
 
-            services.TryAddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.TryAddTransient<IMyExpensesSeed, MyExpensesSeed>();
 
             services.AddAutoMapper(typeof(MyExpensesProfile));
@@ -62,16 +62,24 @@ namespace lfmachadodasilva.MyExpenses.Api
             services.Configure<WebSettingsConfig>(Configuration.GetSection("WebSettings"));
             services.TryAddTransient<IWebSettings, WebSettings>();
 
-            var migrationAssembly = Configuration.GetSection("MigrationAssembly").Value;
+            var useInMemoryDatabase = Configuration.GetSection("WebSettings").GetSection("UseInMemoryDatabase").Value;
             var connection = Configuration.GetConnectionString("DefaultConnection");
 
-            services
-                .AddDbContext<MyExpensesContext>(options =>
-                    options.UseNpgsql(connection,
-                        x => x.MigrationsAssembly(migrationAssembly)));
-
-            services.TryAddSingleton<FakeDatabase, FakeDatabase>();
-        }
+            if (useInMemoryDatabase == true.ToString())
+            {
+                services
+                    .AddDbContext<MyExpensesContext>(options =>
+                        options.UseInMemoryDatabase(connection));
+            }
+            else
+            {
+                var migrationAssembly = Configuration.GetSection("MigrationAssembly").Value;
+                services
+                    .AddDbContext<MyExpensesContext>(options =>
+                        options.UseNpgsql(connection,
+                            x => x.MigrationsAssembly(migrationAssembly)));
+            }
+    }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

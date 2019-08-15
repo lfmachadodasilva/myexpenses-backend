@@ -10,7 +10,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
     {
         bool ClearDatabaseAndSeedData { get; }
 
-        bool UseFakeDatabase { get; }
+        bool UseInMemoryDatabase { get; }
+
+        long DefaultUserId { get; }
     }
 
     public class WebSettings : IWebSettings
@@ -30,6 +32,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
         public bool ClearDatabaseAndSeedData => _webSettingsOptions.Value.ClearDatabaseAndSeedData;
 
         /// <inheritdoc />
-        public bool UseFakeDatabase => _webSettingsOptions.Value.UseFakeDatabase;
+        public bool UseInMemoryDatabase => _webSettingsOptions.Value.UseInMemoryDatabase;
+
+        /// <inheritdoc />
+        public long DefaultUserId => _webSettingsOptions.Value.DefaultUserId;
     }
 }

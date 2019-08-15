@@ -19,6 +19,13 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         /// <param name="year">year</param>
         /// <returns>models</returns>
         Task<IEnumerable<LabelWithValuesDto>> GetAllWithValues(long groupId, int month, int year);
+
+        /// <summary>
+        /// Get all
+        /// </summary>
+        /// <param name="groupId">group id</param>
+        /// <returns>models</returns>
+        Task<IEnumerable<LabelDto>> GetAll(long groupId);
     }
 
     public class LabelService : ServiceBase<LabelModel, LabelDto>, ILabelService
@@ -37,12 +44,12 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<LabelWithValuesDto>> GetAllWithValues(long groupId, int month, int year)
+        public async Task<IEnumerable<LabelWithValuesDto>> GetAllWithValues(long groupId, int month, int year)
         {
-            return Task.Run(() =>
-            {
-                var labels = _labelRepository
-                    .GetAll(x => x.Expenses)
+            var labelsTask = _labelRepository
+                .GetAllAsyncEnumerable(x => x.Expenses);
+
+            var labelsWithValueTask = labelsTask
                     .Select(label =>
                     {
                         var labelWithValues = _mapper.Map<LabelWithValuesDto>(label);
@@ -52,7 +59,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
                                 e.GroupId.Equals(groupId) &&
                                 e.Date.Month.Equals(month) &&
                                 e.Date.Year.Equals(year))
-                            .Sum(x => x.Value);
+                            .Select(e => e.Value)
+                            .Sum();
 
                         var currentDate = new DateTime(year, month, 1);
                         var lastMonth = currentDate.AddMonths(-1);
@@ -62,19 +70,37 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
                                 e.GroupId.Equals(groupId) &&
                                 e.Date.Month.Equals(lastMonth.Month) &&
                                 e.Date.Year.Equals(lastMonth.Year))
-                            .Sum(x => x.Value);
+                            .Select(e => e.Value)
+                            .Sum();
 
                         labelWithValues.AverageValue = label.Expenses
                             .Where(e =>
                                 e.GroupId.Equals(groupId) &&
                                 e.Date < currentDate)
-                            .Average(x => x.Value);
+                            .Select(e => e.Value)
+                            .DefaultIfEmpty()
+                            .Average();
 
                         return labelWithValues;
                     });
 
-                return labels;
-            });
+            var labels = await labelsWithValueTask.ToList();
+            return labels;
+        }
+
+        public async Task<IEnumerable<LabelDto>> GetAll(long groupId)
+        {
+            // get all labels
+            var labelTask = _labelRepository.GetAllAsyncEnumerable();
+
+            // create query
+            var currentlabelTask = labelTask.Where(x => x.GroupId.Equals(groupId));
+
+            // execute database query
+            var labels = await currentlabelTask.ToList();
+
+            // map to DTO
+            return _mapper.Map<IEnumerable<LabelDto>>(labels);
         }
     }
 }
