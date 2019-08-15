@@ -1,9 +1,12 @@
-﻿using AutoMapper;
-using lfmachadodasilva.MyExpenses.Api.Controllers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Config;
 using lfmachadodasilva.MyExpenses.Api.Repositories;
 using lfmachadodasilva.MyExpenses.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace lfmachadodasilva.MyExpenses.Api
 {
@@ -29,9 +34,9 @@ namespace lfmachadodasilva.MyExpenses.Api
         {
             services
                 .AddCors()
-                .AddSwaggerGen(c =>
+                .AddSwaggerGen(options =>
                 {
-                    c.SwaggerDoc(
+                    options.SwaggerDoc(
                         "v1",
                         new Info
                         {
@@ -39,6 +44,19 @@ namespace lfmachadodasilva.MyExpenses.Api
                             Description = "Project to with base/core stuff",
                             Version = "v1"
                         });
+                    options.AddSecurityDefinition("oauth2",
+                        new ApiKeyScheme
+                        {
+                            In = "header",
+                            Description = "Please enter into field the word 'Bearer' following by space and JWT",
+                            Name = "Authorization",
+                            Type = "apiKey"
+                        });
+                    options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+                        { "oauth2", Enumerable.Empty<string>() },
+                    });
+
+                    options.OperationFilter<AuthorizeCheckOperationFilter>(); // Required to use access token
                 })
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -79,7 +97,22 @@ namespace lfmachadodasilva.MyExpenses.Api
                         options.UseNpgsql(connection,
                             x => x.MigrationsAssembly(migrationAssembly)));
             }
-    }
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = "https://securetoken.google.com/myexpenses-a37a9";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "https://securetoken.google.com/myexpenses-a37a9",
+                        ValidateAudience = true,
+                        ValidAudience = "myexpenses-a37a9",
+                        ValidateLifetime = true
+                    };
+                });
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -101,12 +134,38 @@ namespace lfmachadodasilva.MyExpenses.Api
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Base API V1");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Base API V1");
+
+                //options.RoutePrefix = string.Empty;
+
+                //options.OAuthClientId("myexpenses_api_swagger");
+                //options.OAuthAppName("MyExpenses API - Swagger"); // presentation purposes only
             });
 
+            app.UseAuthentication();
+
             app.UseMvc();
+        }
+
+        public class AuthorizeCheckOperationFilter : IOperationFilter
+        {
+            public void Apply(Operation operation, OperationFilterContext context)
+            {
+                // Check for authorize attribute
+                if (context.ApiDescription.TryGetMethodInfo(out var methodInfo) &&
+                    methodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any())
+                {
+                    operation.Responses.Add("401", new Response { Description = "Unauthorized" });
+                    operation.Responses.Add("403", new Response { Description = "Forbidden" });
+
+                    operation.Security = new List<IDictionary<string, IEnumerable<string>>>
+                    {
+                        new Dictionary<string, IEnumerable<string>> {{"oauth2", new[] {"myexpenses_api"}}}
+                    };
+                }
+            }
         }
     }
 }
