@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AutoMapper;
 using lfmachadodasilva.MyExpenses.Api.Models;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,15 +50,28 @@ namespace lfmachadodasilva.MyExpenses.Api
                         new ApiKeyScheme
                         {
                             In = "header",
-                            Description = "Please enter into field the word 'Bearer' following by space and JWT",
+                            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                             Name = "Authorization",
                             Type = "apiKey"
                         });
-                    options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                        { "oauth2", Enumerable.Empty<string>() },
+                    options.DescribeAllEnumsAsStrings();
+                    // JWT-token authentication by password
+                    options.AddSecurityDefinition("Bearer", new OAuth2Scheme
+                    {
+                        Type = "oauth2",
+                        Flow = "password",
+                        TokenUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDICa3J8DJoPwJDL1F53zhXMvaJBNZYLLI"
+                        // Optional scopes
+                        //Scopes = new Dictionary<string, string>
+                        //{
+                        //    { "api-name", "my api" },
+                        //}
                     });
-
-                    options.OperationFilter<AuthorizeCheckOperationFilter>(); // Required to use access token
+                    // It must be here so the Swagger UI works correctly (Swashbuckle.AspNetCore.SwaggerUI, Version=4.0.1.0)
+                    //options.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                    //{
+                    //    {"Bearer", new string[] {}}
+                    //});
                 })
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

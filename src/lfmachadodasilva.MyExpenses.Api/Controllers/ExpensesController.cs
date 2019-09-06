@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 using lfmachadodasilva.MyExpenses.Api.Models.Requests;
 using lfmachadodasilva.MyExpenses.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
 
         // GET api/values
         [HttpGet("years")]
+        [Authorize]
         [ProducesResponseType(typeof(int[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetYears([FromQuery]long groupId)
         {
