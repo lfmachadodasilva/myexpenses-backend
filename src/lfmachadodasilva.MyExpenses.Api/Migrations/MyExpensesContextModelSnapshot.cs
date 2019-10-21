@@ -78,15 +78,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Migrations
 
                     b.Property<long>("UserId");
 
-                    b.Property<long?>("GroupModelId");
-
-                    b.Property<long?>("UserModelId");
-
                     b.HasKey("GroupId", "UserId");
 
-                    b.HasIndex("GroupModelId");
-
-                    b.HasIndex("UserModelId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserGroup");
                 });
@@ -120,13 +114,15 @@ namespace lfmachadodasilva.MyExpenses.Api.Migrations
 
             modelBuilder.Entity("lfmachadodasilva.MyExpenses.Api.Models.UserGroupModel", b =>
                 {
-                    b.HasOne("lfmachadodasilva.MyExpenses.Api.Models.GroupModel")
+                    b.HasOne("lfmachadodasilva.MyExpenses.Api.Models.GroupModel", "Group")
                         .WithMany("UserGroups")
-                        .HasForeignKey("GroupModelId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("lfmachadodasilva.MyExpenses.Api.Models.UserModel")
+                    b.HasOne("lfmachadodasilva.MyExpenses.Api.Models.UserModel", "User")
                         .WithMany("UserGroups")
-                        .HasForeignKey("UserModelId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

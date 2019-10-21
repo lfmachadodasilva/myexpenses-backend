@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using AutoMapper;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Config;
@@ -83,19 +85,19 @@ namespace lfmachadodasilva.MyExpenses.Api
             var useInMemoryDatabase = Configuration.GetSection("WebSettings").GetSection("UseInMemoryDatabase").Value;
             var connection = Configuration.GetConnectionString("DefaultConnection");
 
-            if (useInMemoryDatabase == true.ToString())
-            {
-                services
-                    .AddDbContext<MyExpensesContext>(options =>
-                        options.UseInMemoryDatabase(connection));
-            }
-            else
+            if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
             {
                 var migrationAssembly = Configuration.GetSection("MigrationAssembly").Value;
                 services
                     .AddDbContext<MyExpensesContext>(options =>
                         options.UseNpgsql(connection,
                             x => x.MigrationsAssembly(migrationAssembly)));
+            }
+            else
+            {
+                services
+                    .AddDbContext<MyExpensesContext>(options =>
+                        options.UseInMemoryDatabase(databaseName: "myexpenses"));
             }
 
             services

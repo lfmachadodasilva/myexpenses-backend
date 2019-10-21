@@ -9,7 +9,13 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
         [Key]
         public long GroupId { get; set; }
 
+        [ForeignKey("GroupId")]
+        public GroupModel Group { get; set; }
+
         [Key]
         public long UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public UserModel User { get; set; }
     }
 }

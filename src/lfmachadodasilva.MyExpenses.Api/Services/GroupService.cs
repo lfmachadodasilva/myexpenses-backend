@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace lfmachadodasilva.MyExpenses.Api.Services
 {
-    public interface IGroupService: IService<GroupModel, GroupDto>
+    public interface IGroupService : IService<GroupModel, GroupDto>
     {
         Task<IEnumerable<GroupDto>> GetAllAsync(long userId);
     }
@@ -31,9 +31,10 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         public async Task<IEnumerable<GroupDto>> GetAllAsync(long userId)
         {
             var groups = await _repository
-                .GetAllAsyncEnumerable()
+                .GetAllAsyncEnumerable(x => x.UserGroups)
                 .Where(g => g.UserGroups.Any(ug => ug.UserId.Equals(userId)))
                 .ToList();
+
             return _mapper.Map<IEnumerable<GroupDto>>(groups);
         }
     }
