@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using lfmachadodasilva.MyExpenses.Api.Models.Dtos;
 

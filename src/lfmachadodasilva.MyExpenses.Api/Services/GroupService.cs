@@ -31,11 +31,16 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         public async Task<IEnumerable<GroupDto>> GetAllAsync(long userId)
         {
             var groups = await _repository
-                .GetAllAsyncEnumerable(x => x.UserGroups)
+                .GetAllWithAllIncludeAsync()
                 .Where(g => g.UserGroups.Any(ug => ug.UserId.Equals(userId)))
                 .ToList();
 
-            return _mapper.Map<IEnumerable<GroupDto>>(groups);
+            return groups.Select(x =>
+            {
+                var group = _mapper.Map<GroupDto>(x);
+                group.Users = _mapper.Map<IEnumerable<UserDto>>(x.UserGroups.Select(y => y.User));
+                return group;
+            });
         }
     }
 }

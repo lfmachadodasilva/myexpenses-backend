@@ -12,7 +12,7 @@ namespace lfmachadodasilva.MyExpenses.Api
         {
             var host = CreateWebHostBuilder(args)
                 .UseKestrel()
-                .UseContentRoot(Assembly.GetEntryAssembly().Location + "/../")
+                .UseContentRoot(Assembly.GetEntryAssembly()?.Location + "/../")
                 .UseUrls("http://0.0.0.0:4300")
                 .Build();
 
