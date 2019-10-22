@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +11,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
     public interface IGroupRepository : IRepository<GroupModel>
     {
         IAsyncEnumerable<GroupModel> GetAllWithAllIncludeAsync();
+
+        Task<GroupModel> GetByIdAsync(long id);
     }
 
     public class GroupRepository : RepositoryBase<GroupModel>, IGroupRepository
@@ -38,6 +39,17 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
                     .ThenInclude(x => x.User)
                     .ThenInclude(x => x.UserGroups)
                 .ToAsyncEnumerable();
+        }
+
+        public Task<GroupModel> GetByIdAsync(long id)
+        {
+            _logger.LogInformation("get by id with all include");
+
+            return _context.Set<GroupModel>()
+                .Include(x => x.UserGroups)
+                    .ThenInclude(x => x.User)
+                    .ThenInclude(x => x.UserGroups)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

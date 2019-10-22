@@ -42,5 +42,15 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
                 return group;
             });
         }
+
+        public override async Task<GroupDto> GetByIdAsync(long id)
+        {
+            var model = await _repository.GetByIdAsync(id);
+
+            var dto = _mapper.Map<GroupDto>(model);
+            dto.Users = _mapper.Map<IEnumerable<UserDto>>(model.UserGroups.Select(y => y.User));
+
+            return dto;
+        }
     }
 }
