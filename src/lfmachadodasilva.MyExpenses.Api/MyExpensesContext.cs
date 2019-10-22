@@ -23,6 +23,11 @@ namespace lfmachadodasilva.MyExpenses.Api
                 .HasKey(x => new { x.GroupId, x.UserId });
 
             builder
+                .Entity<UserGroupModel>()
+                .HasOne(x => x.Group)
+                .WithMany(x => x.UserGroups);
+
+            builder
                 .Entity<ExpenseModel>()
                 .HasOne(x => x.Label)
                 .WithMany(x => x.Expenses);

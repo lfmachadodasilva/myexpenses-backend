@@ -84,25 +84,23 @@ namespace lfmachadodasilva.MyExpenses.Api.Migrations
                 columns: table => new
                 {
                     GroupId = table.Column<long>(nullable: false),
-                    UserId = table.Column<long>(nullable: false),
-                    GroupModelId = table.Column<long>(nullable: true),
-                    UserModelId = table.Column<long>(nullable: true)
+                    UserId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserGroup", x => new { x.GroupId, x.UserId });
                     table.ForeignKey(
-                        name: "FK_UserGroup_Group_GroupModelId",
-                        column: x => x.GroupModelId,
+                        name: "FK_UserGroup_Group_GroupId",
+                        column: x => x.GroupId,
                         principalTable: "Group",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserGroup_User_UserModelId",
-                        column: x => x.UserModelId,
+                        name: "FK_UserGroup_User_UserId",
+                        column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -116,14 +114,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Migrations
                 column: "LabelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserGroup_GroupModelId",
+                name: "IX_UserGroup_UserId",
                 table: "UserGroup",
-                column: "GroupModelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserGroup_UserModelId",
-                table: "UserGroup",
-                column: "UserModelId");
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
