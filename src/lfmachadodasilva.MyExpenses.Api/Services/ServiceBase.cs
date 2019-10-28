@@ -22,7 +22,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TDto>> GetAllAsync()
+        public virtual async Task<IEnumerable<TDto>> GetAllAsync()
         {
             var models = await _repository.GetAllAsyncEnumerable().ToList();
             return _mapper.Map<IEnumerable<TDto>>(models);
@@ -36,7 +36,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         }
 
         /// <inheritdoc />
-        public async Task<TDto> AddAsync(TDto dto)
+        public virtual async Task<TDto> AddAsync(TDto dto)
         {
             _unitOfWork.BeginTransaction();
             var model = await _repository.AddAsync(_mapper.Map<TModel>(dto));
@@ -48,7 +48,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         }
 
         /// <inheritdoc />
-        public async Task<TDto> UpdateAsync(TDto dto)
+        public virtual async Task<TDto> UpdateAsync(TDto dto)
         {
             _unitOfWork.BeginTransaction();
             var model = await _repository.UpdateAsync(_mapper.Map<TModel>(dto));
@@ -60,7 +60,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> RemoveAsync(long id)
+        public virtual async Task<bool> RemoveAsync(long id)
         {
             _unitOfWork.BeginTransaction();
             var result = await _repository.RemoveAsync(id);

@@ -25,7 +25,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
 
         // GET api/values
         [HttpGet]
-        [ProducesResponseType(typeof(GroupDto[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GroupWithValuesDto[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _groupService.GetAllAsync(_webSettings.DefaultUserId));
@@ -33,7 +33,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GroupWithValuesDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetById(int id)
         {
             return Ok(await _groupService.GetByIdAsync(id));

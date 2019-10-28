@@ -81,6 +81,7 @@ namespace lfmachadodasilva.MyExpenses.Api
             services.TryAddTransient<ILabelRepository, LabelRepository>();
             services.TryAddTransient<IGroupRepository, GroupRepository>();
             services.TryAddTransient<IUserRepository, UserRepository>();
+            services.TryAddTransient<IUserGroupRepository, UserGroupRepository>();
 
             services.TryAddTransient<IExpenseService, ExpenseService>();
             services.TryAddTransient<ILabelService, LabelService>();
