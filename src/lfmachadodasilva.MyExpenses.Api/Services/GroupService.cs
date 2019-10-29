@@ -110,7 +110,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             var model = _mapper.Map<GroupModel>(dto);
 
             var groups = dto.Users
-                .Select(item => 
+                .Select(item =>
                     new UserGroupModel
                     {
                         GroupId = model.Id,

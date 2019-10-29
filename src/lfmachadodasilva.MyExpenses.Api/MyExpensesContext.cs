@@ -31,6 +31,8 @@ namespace lfmachadodasilva.MyExpenses.Api
                 .Entity<ExpenseModel>()
                 .HasOne(x => x.Label)
                 .WithMany(x => x.Expenses);
+
+            builder.ForNpgsqlUseIdentityColumns();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
