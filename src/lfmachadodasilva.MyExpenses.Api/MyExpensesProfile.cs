@@ -11,6 +11,7 @@ namespace lfmachadodasilva.MyExpenses.Api
         {
             CreateMap<GroupModel, GroupModel>();
             CreateMap<GroupModel, GroupDto>().ReverseMap();
+            CreateMap<GroupModel, GroupAddDto>().ReverseMap();
             CreateMap<GroupModel, GroupWithValuesDto>().ReverseMap();
 
             CreateMap<ExpenseModel, ExpenseModel>();

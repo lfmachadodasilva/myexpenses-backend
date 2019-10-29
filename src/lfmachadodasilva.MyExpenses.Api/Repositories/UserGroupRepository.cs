@@ -46,20 +46,22 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
             var byGroupTask = GetAllAsync().Where(x => x.GroupId.Equals(groupId));
             var byGroup = await byGroupTask.ToList();
 
-            var toRemove = byGroup
-                .Join(
-                    models,
-                    group => group.UserId,
-                    model => model.UserId,
-                    (group, model) => group);
+            var toRemove = byGroup.Except(models);
+            //var toRemove = byGroup
+            //    .Join(
+            //        models,
+            //        group => group.UserId,
+            //        model => model.UserId,
+            //        (group, model) => group);
             _context.RemoveRange(toRemove);
 
-            var toAdd = models
-                .Join(
-                    byGroup,
-                    group => group.UserId,
-                    model => model.UserId,
-                    (group, model) => group);
+            var toAdd = models.Except(byGroup);
+            //var toAdd = models
+            //    .Join(
+            //        byGroup,
+            //        group => group.UserId,
+            //        model => model.UserId,
+            //        (group, model) => group);
             await _context.AddRangeAsync(toAdd);
 
             // var result = GetAllAsync().Where(x => x.GroupId.Equals(groupId));

@@ -8,12 +8,18 @@ using System.Threading.Tasks;
 
 namespace lfmachadodasilva.MyExpenses.Api.Services
 {
-    public interface IGroupService : IService<GroupModel, GroupBaseDto>
+    public interface IGroupService
     {
         Task<IEnumerable<GroupWithValuesDto>> GetAllAsync(long userId);
+
+        Task<GroupWithValuesDto> GetByIdAsync(long id);
+
+        Task<GroupDto> AddAsync(GroupAddDto dto);
+
+        Task<GroupDto> UpdateAsync(GroupDto dto);
     }
 
-    public class GroupService : ServiceBase<GroupModel, GroupBaseDto>, IGroupService
+    public class GroupService : IGroupService
     {
         private readonly IGroupRepository _repository;
         private readonly IUserGroupRepository _userGrouprepository;
@@ -23,10 +29,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         public GroupService(
             IGroupRepository repository,
             IUserGroupRepository userGrouprepository,
-            MyExpensesContext context,
             IUnitOfWork unitOfWork,
             IMapper mapper)
-            : base(repository, unitOfWork, mapper)
         {
             _repository = repository;
             _userGrouprepository = userGrouprepository;
@@ -49,7 +53,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             });
         }
 
-        public override async Task<GroupBaseDto> GetByIdAsync(long id)
+        public async Task<GroupWithValuesDto> GetByIdAsync(long id)
         {
             var model = await _repository.GetByIdAsync(id);
 
@@ -59,7 +63,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             return dto;
         }
 
-        public override async Task<GroupBaseDto> AddAsync(GroupBaseDto dto)
+        public async Task<GroupDto> AddAsync(GroupAddDto dto)
         {
             _unitOfwork.BeginTransaction();
 
@@ -75,9 +79,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
                 return null;
             }
 
-            foreach (var item in (dto as GroupDto).Users)
+            foreach (var item in dto.Users)
             {
-                var r = await _userGrouprepository.AddAync(new UserGroupModel
+                await _userGrouprepository.AddAync(new UserGroupModel
                 {
                     GroupId = modelAdded.Id,
                     UserId = item
@@ -86,7 +90,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
 
             result = await _unitOfwork.CommitAsync();
 
-            if (result != (dto as GroupDto).Users.Count())
+            if (result != dto.Users.Count())
             {
                 // TODO throw
                 return null;
@@ -99,21 +103,20 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             return dtoAdded;
         }
 
-        public override async Task<GroupBaseDto> UpdateAsync(GroupBaseDto dto)
+        public async Task<GroupDto> UpdateAsync(GroupDto dto)
         {
             _unitOfwork.BeginTransaction();
 
             var model = _mapper.Map<GroupModel>(dto);
 
-            var groups = new List<UserGroupModel>();
-            foreach (var item in (dto as GroupDto).Users)
-            {
-                groups.Add(new UserGroupModel
-                {
-                    GroupId = model.Id,
-                    UserId = item
-                });
-            }
+            var groups = dto.Users
+                .Select(item => 
+                    new UserGroupModel
+                    {
+                        GroupId = model.Id,
+                        UserId = item
+                    })
+                .ToList();
 
             await _userGrouprepository.UpdateAsync(model.Id, groups);
             var result = await _unitOfwork.CommitAsync();

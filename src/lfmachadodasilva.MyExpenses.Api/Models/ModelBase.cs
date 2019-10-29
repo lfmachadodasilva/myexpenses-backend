@@ -7,6 +7,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
     {
         /// <inheritdoc />
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
     }
 }
