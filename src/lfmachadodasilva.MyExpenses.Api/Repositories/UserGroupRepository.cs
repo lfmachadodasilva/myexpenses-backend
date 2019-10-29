@@ -13,6 +13,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
         IAsyncEnumerable<UserGroupModel> GetAllAsync();
         Task<UserGroupModel> AddAync(UserGroupModel model);
         Task UpdateAsync(long groupId, IEnumerable<UserGroupModel> models);
+
+        Task RemoveAsync(IEnumerable<UserGroupModel> models);
     }
 
     public class UserGroupRepository : IUserGroupRepository
@@ -74,6 +76,14 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
 
             // var result = GetAllAsync().Where(x => x.GroupId.Equals(groupId));
             // return result.ToList();
+        }
+
+        public async Task RemoveAsync(IEnumerable<UserGroupModel> models)
+        {
+            if (models.Any())
+            {
+                _context.RemoveRange(models);
+            }
         }
     }
 }

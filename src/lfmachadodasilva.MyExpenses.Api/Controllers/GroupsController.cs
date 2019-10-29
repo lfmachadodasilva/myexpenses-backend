@@ -65,11 +65,11 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         }
 
         // DELETE api/values/5
-        //[HttpDelete("{id}")]
-        //[ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        //public async Task<bool> Delete(int id)
-        //{
-        //    return await _groupService.RemoveAsync(id);
-        //}
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        public async Task<bool> Delete(long id)
+        {
+            return await _groupService.RemoveAsync(id);
+        }
     }
 }

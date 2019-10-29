@@ -17,6 +17,8 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         Task<GroupDto> AddAsync(GroupAddDto dto);
 
         Task<GroupDto> UpdateAsync(GroupDto dto);
+
+        Task<bool> RemoveAsync(long groupId);
     }
 
     public class GroupService : IGroupService
@@ -128,6 +130,18 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             result = await _unitOfwork.CommitAsync();
 
             return _mapper.Map<GroupDto>(modelUpdated);
+        }
+
+        public async Task<bool> RemoveAsync(long groupId)
+        {
+            // TODO remove all labels with this group
+            // TODO remove all expenses with this group
+
+            var ret = await _repository.RemoveAsync(groupId);
+
+            var result = await _unitOfwork.CommitAsync();
+
+            return result > 0 && ret;
         }
     }
 }
