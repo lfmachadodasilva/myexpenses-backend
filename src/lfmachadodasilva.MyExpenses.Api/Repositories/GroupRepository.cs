@@ -11,8 +11,6 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
     public interface IGroupRepository : IRepository<GroupModel>
     {
         IAsyncEnumerable<GroupModel> GetAllWithAllIncludeAsync();
-
-        Task<GroupModel> GetByIdAsync(long id);
     }
 
     public class GroupRepository : RepositoryBase<GroupModel>, IGroupRepository
@@ -34,18 +32,18 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
         {
             _logger.LogInformation("get all with all include");
 
-            return _context.Set<GroupModel>()
+            return _context.Groups
                 .Include(x => x.UserGroups)
                     .ThenInclude(x => x.User)
                     .ThenInclude(x => x.UserGroups)
                 .ToAsyncEnumerable();
         }
 
-        public Task<GroupModel> GetByIdAsync(long id)
+        public override Task<GroupModel> GetByIdAsync(long id)
         {
             _logger.LogInformation("get by id with all include");
 
-            return _context.Set<GroupModel>()
+            return _context.Groups
                 .Include(x => x.UserGroups)
                     .ThenInclude(x => x.User)
                     .ThenInclude(x => x.UserGroups)

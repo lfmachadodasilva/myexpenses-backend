@@ -52,15 +52,11 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<TModel> GetByIdAsync(long id, params Expression<Func<TModel, object>>[] includes)
+        public virtual Task<TModel> GetByIdAsync(long id)
         {
             _logger.LogInformation($"get by id: {id}");
 
             IQueryable<TModel> models = _context.Set<TModel>();
-            foreach (var include in includes)
-            {
-                models = models.Include(include);
-            }
 
             return models.FirstOrDefaultAsync(x => x.Id == id);
         }

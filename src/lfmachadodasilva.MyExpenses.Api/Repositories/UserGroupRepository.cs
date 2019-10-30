@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using lfmachadodasilva.MyExpenses.Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,11 +9,9 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
 {
     public interface IUserGroupRepository
     {
-        IAsyncEnumerable<UserGroupModel> GetAllAsync();
+        IAsyncEnumerable<UserGroupModel> GetAllAsync(bool include = false);
         Task<UserGroupModel> AddAync(UserGroupModel model);
         Task UpdateAsync(long groupId, IEnumerable<UserGroupModel> models);
-
-        Task RemoveAsync(IEnumerable<UserGroupModel> models);
     }
 
     public class UserGroupRepository : IUserGroupRepository
@@ -23,18 +20,21 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
 
         public UserGroupRepository(
             MyExpensesContext context,
-            ILogger<UserGroupRepository> logger,
-            IMapper mapper)
+            ILogger<UserGroupRepository> logger)
         {
             _context = context;
         }
 
-        public IAsyncEnumerable<UserGroupModel> GetAllAsync()
+        public IAsyncEnumerable<UserGroupModel> GetAllAsync(bool include = false)
         {
-            return _context.UserGroup
-                //.Include(x => x.Group)
-                //.Include(x => x.User)
-                .ToAsyncEnumerable();
+            if (include)
+            {
+                return _context.UserGroup
+                    .Include(x => x.Group)
+                    .Include(x => x.User)
+                    .ToAsyncEnumerable();
+            }
+            return _context.UserGroup.ToAsyncEnumerable();
         }
 
         public async Task<UserGroupModel> AddAync(UserGroupModel model)
@@ -49,26 +49,12 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
             var byGroup = await byGroupTask.ToList();
 
             var toRemove = byGroup.Where(x => models.Any(y => !y.UserId.Equals(x.UserId)));
-            //var toRemove = byGroup.Except(models).ToList();
-            //var toRemove = byGroup
-            //    .Join(
-            //        models,
-            //        group => group.UserId,
-            //        model => model.UserId,
-            //        (group, model) => group);
             if (toRemove.Any())
             {
                 _context.RemoveRange(toRemove);
             }
 
             var toAdd = models.Where(x => !byGroup.Any(y => !y.UserId.Equals(x.UserId)));
-            //var toAdd = models.Except(byGroup).ToList();
-            //var toAdd = models
-            //    .Join(
-            //        byGroup,
-            //        group => group.UserId,
-            //        model => model.UserId,
-            //        (group, model) => group);
             if (toAdd.Any())
             {
                 await _context.AddRangeAsync(toAdd);
@@ -76,14 +62,6 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
 
             // var result = GetAllAsync().Where(x => x.GroupId.Equals(groupId));
             // return result.ToList();
-        }
-
-        public async Task RemoveAsync(IEnumerable<UserGroupModel> models)
-        {
-            if (models.Any())
-            {
-                _context.RemoveRange(models);
-            }
         }
     }
 }

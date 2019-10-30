@@ -29,7 +29,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Repositories
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>objects</returns>
-        Task<TModel> GetByIdAsync(long id, params Expression<Func<TModel, object>>[] includes);
+        Task<TModel> GetByIdAsync(long id);
 
         /// <summary>
         /// Update
