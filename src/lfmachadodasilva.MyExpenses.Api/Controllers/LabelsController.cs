@@ -23,24 +23,24 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         // GET api/values
         [HttpGet("withValues")]
         [ProducesResponseType(typeof(LabelWithValuesDto[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllWithValues([FromQuery]SearchRequest request)
+        public async Task<IActionResult> GetAllWithValuesAsync([FromQuery]SearchRequest request)
         {
-            var labels = await _labelService.GetAllWithValues(request.GroupId, request.Month, request.Year);
+            var labels = await _labelService.GetAllWithValuesAsync(request.GroupId, request.Month, request.Year);
             return Ok(labels);
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(LabelWithValuesDto[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll([FromQuery][Required] long groupId)
+        public async Task<IActionResult> GetAllAsync([FromQuery]long groupId)
         {
-            var labels = await _labelService.GetAll(groupId);
+            var labels = await _labelService.GetAllAsync(groupId);
             return Ok(labels);
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             var label = await _labelService.GetByIdAsync(id);
             return Ok(label);
@@ -49,7 +49,7 @@ namespace lfmachadodasilva.MyExpenses.Api.Controllers
         // POST api/values
         [HttpPost]
         [ProducesResponseType(typeof(LabelDto), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Add([FromBody] LabelDto value)
+        public async Task<IActionResult> Add([FromBody] LabelAddDto value)
         {
             // TODO
             //if(value.Name == "duplicate")

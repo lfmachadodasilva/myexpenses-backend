@@ -6,102 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace lfmachadodasilva.MyExpenses.Api
 {
-    public class FakeModelDatabase
-    {
-        public ICollection<LabelModel> Labels;
-        public ICollection<GroupModel> Groups;
-        public ICollection<ExpenseModel> Expenses;
-        public ICollection<UserModel> Users;
-        public ICollection<UserGroupModel> UserGroups;
-
-        public FakeModelDatabase()
-        {
-            if (Expenses == null || Labels == null || Groups == null)
-            {
-                Random rnd = new Random();
-
-                Labels = new List<LabelModel>();
-                Groups = new List<GroupModel>();
-                Expenses = new List<ExpenseModel>();
-                UserGroups = new List<UserGroupModel>
-                {
-                    new UserGroupModel
-                    {
-                        GroupId = 1,
-                        UserId = 1
-                    },
-                    new UserGroupModel
-                    {
-                        GroupId = 1,
-                        UserId = 2
-                    },
-                    new UserGroupModel
-                    {
-                        GroupId = 1,
-                        UserId = 3
-                    }
-                };
-
-                Users = new List<UserModel>
-                {
-                    new UserModel
-                    {
-                        Id = 1,
-                        Name = "UserName0",
-                    },
-                    new UserModel
-                    {
-                        Id = 2,
-                        Name = "UserName1",
-                    },
-                    new UserModel
-                    {
-                        Id = 3,
-                        Name = "UserName2",
-                    }
-                };
-
-                for (var g = 1; g < 2; g++)
-                {
-                    Groups.Add(new GroupModel
-                    {
-                        Id = g,
-                        Name = $"GroupName{g}",
-                        //Users = Users
-                    });
-
-                    ICollection<LabelModel> labelsTmp = new List<LabelModel>();
-
-                    for (var i = 1; i < 20; i++)
-                    {
-                        Labels.Add(new LabelModel
-                        {
-                            Id = i,
-                            Name = $"LabelName{i}",
-                            GroupId = g
-                        });
-                    }
-
-                    for (var i = 1; i < 60; i++)
-                    {
-                        var idLabel = rnd.Next(1, 19);
-
-                        Expenses.Add(new ExpenseModel
-                        {
-                            Id = i,
-                            Name = $"ExpenseName{i}",
-                            Value = rnd.Next(1, 250),
-                            Date = DateTime.Today.AddDays(-rnd.Next(1, 60)),
-                            LabelId = Labels.ElementAt(idLabel).Id,
-                            Type = (ExpenseType)rnd.Next(0, 2),
-                            GroupId = g
-                        });
-                    }
-                }
-            }
-        }
-    }
-
     public interface IMyExpensesSeed
     {
         void Run();
@@ -131,34 +35,141 @@ namespace lfmachadodasilva.MyExpenses.Api
                 _context.Database.Migrate();
             }
 
-            var fake = new FakeModelDatabase();
+            var users = AddUsers();
+            var groups = AddGroups();
+            AddUserGroup(users, groups);
 
-            foreach (var user in fake.Users)
-            {
-                _context.Add(user);
-            }
+            var labels = AddLabels(groups);
+            AddExpenses(groups, labels);
+        }
 
-            foreach (var group in fake.Groups)
-            {
-                _context.Add(group);
-            }
+        private IEnumerable<UserModel> AddUsers()
+        {
+            var models = new List<UserModel>
+                {
+                    new UserModel
+                    {
+                        //Id = 1,
+                        Name = "UserName1",
+                    },
+                    new UserModel
+                    {
+                        //Id = 2,
+                        Name = "UserName2",
+                    },
+                    new UserModel
+                    {
+                        //Id = 3,
+                        Name = "UserName3",
+                    }
+                };
 
-            foreach (var userGroup in fake.UserGroups)
+            List<UserModel> result = new List<UserModel>();
+            models.ForEach(model =>
             {
+                result.Add(_context.Add(model).Entity);
+                _context.SaveChanges();
+            });
+
+            return result;
+        }
+
+        private IEnumerable<GroupModel> AddGroups()
+        {
+            var models = new List<GroupModel>
+                {
+                    new GroupModel
+                    {
+                        //Id = 1,
+                        Name = "GroupName1",
+                    },
+                    new GroupModel
+                    {
+                        //Id = 2,
+                        Name = "GroupName2",
+                    },
+                    new GroupModel
+                    {
+                        //Id = 3,
+                        Name = "GroupName3",
+                    }
+                };
+
+            List<GroupModel> result = new List<GroupModel>();
+            models.ForEach(model =>
+            {
+                result.Add(_context.Add(model).Entity);
+                _context.SaveChanges();
+            });
+
+            return result;
+        }
+
+        private void AddUserGroup(IEnumerable<UserModel> users, IEnumerable<GroupModel> groups)
+        {
+            var user = users.FirstOrDefault();
+            foreach (var group in groups)
+            {
+                var userGroup = new UserGroupModel
+                {
+                    UserId = user.Id,
+                    GroupId = group.Id
+                };
                 _context.Add(userGroup);
+                var result = _context.SaveChanges();
+                //Console.WriteLine($"result: {result}");
             }
+        }
 
-            foreach (var label in fake.Labels)
+        private IEnumerable<LabelModel> AddLabels(IEnumerable<GroupModel> groups)
+        {
+            var result = new List<LabelModel>();
+
+            foreach (var group in groups)
             {
-                _context.Add(label);
+                for (var i = 1; i < 20; i++)
+                {
+                    result.Add(_context.Add(new LabelModel
+                    {
+                        //Id = i,
+                        Name = $"LabelName{i}",
+                        GroupId = group.Id
+                    }).Entity);
+                    _context.SaveChanges();
+                }
             }
 
-            foreach (var expense in fake.Expenses)
+            return result;
+        }
+
+        private IEnumerable<ExpenseModel> AddExpenses(IEnumerable<GroupModel> groups, IEnumerable<LabelModel> labels)
+        {
+            var result = new List<ExpenseModel>();
+            Random rnd = new Random();
+
+            foreach (var group in groups)
             {
-                _context.Add(expense);
+                var labelsByGroup = labels.Where(x => x.GroupId.Equals(group.Id));
+
+                for (var i = 1; i < 60; i++)
+                {
+                    var idLabel = rnd.Next(1, 19);
+
+                    result.Add(_context.Add(new ExpenseModel
+                    {
+                        //Id = i,
+                        Name = $"ExpenseName{i}",
+                        Value = rnd.Next(1, 250),
+                        Date = DateTime.Today.AddDays(-rnd.Next(1, 60)),
+                        LabelId = labelsByGroup.ElementAt(idLabel).Id,
+                        Type = (ExpenseType)rnd.Next(0, 2),
+                        GroupId = group.Id
+                    }).Entity);
+                    _context.SaveChanges();
+                }
             }
 
-            _context.SaveChanges();
+            return result;
         }
     }
 }

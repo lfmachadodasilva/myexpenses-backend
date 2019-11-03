@@ -1,5 +1,13 @@
 ﻿namespace lfmachadodasilva.MyExpenses.Api.Models.Dtos
 {
+    public class LabelAddDto
+    {
+        public string Name { get; set; }
+
+        // Relations
+        public long GroupId { get; set; }
+    }
+
     public class LabelDto : DtoBase
     {
         public string Name { get; set; }

@@ -18,19 +18,17 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
         /// <param name="month">month</param>
         /// <param name="year">year</param>
         /// <returns>models</returns>
-        Task<IEnumerable<LabelWithValuesDto>> GetAllWithValues(long groupId, int month, int year);
+        Task<IEnumerable<LabelWithValuesDto>> GetAllWithValuesAsync(long groupId, int month, int year);
 
-        /// <summary>
-        /// Get all
-        /// </summary>
-        /// <param name="groupId">group id</param>
-        /// <returns>models</returns>
-        Task<IEnumerable<LabelDto>> GetAll(long groupId);
+        Task<LabelDto> AddAsync(LabelAddDto dto);
+
+        Task<IEnumerable<LabelDto>> GetAllAsync(long groupId);
     }
 
     public class LabelService : ServiceBase<LabelModel, LabelDto>, ILabelService
     {
         private readonly ILabelRepository _labelRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public LabelService(
@@ -40,11 +38,12 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             : base(labelRepository, unitOfWork, mapper)
         {
             _labelRepository = labelRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<LabelWithValuesDto>> GetAllWithValues(long groupId, int month, int year)
+        public async Task<IEnumerable<LabelWithValuesDto>> GetAllWithValuesAsync(long groupId, int month, int year)
         {
             var labelsTask = _labelRepository
                 .GetAllAsyncEnumerable(x => x.Expenses);
@@ -88,7 +87,24 @@ namespace lfmachadodasilva.MyExpenses.Api.Services
             return labels;
         }
 
-        public async Task<IEnumerable<LabelDto>> GetAll(long groupId)
+        public async Task<LabelDto> AddAsync(LabelAddDto dto)
+        {
+            _unitOfWork.BeginTransaction();
+
+            var modelToAdd = _mapper.Map<LabelModel>(dto);
+
+            var modelAdded = await _labelRepository.AddAsync(modelToAdd);
+
+            var result = await _unitOfWork.CommitAsync();
+            if (result <= 0)
+            {
+                return null;
+            }
+
+            return _mapper.Map<LabelDto>(modelAdded);
+        }
+
+        public async Task<IEnumerable<LabelDto>> GetAllAsync(long groupId)
         {
             // get all labels
             var labelTask = _labelRepository.GetAllAsyncEnumerable();

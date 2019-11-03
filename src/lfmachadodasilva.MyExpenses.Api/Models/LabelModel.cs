@@ -12,5 +12,10 @@ namespace lfmachadodasilva.MyExpenses.Api.Models
         public long GroupId { get; set; }
 
         public IEnumerable<ExpenseModel> Expenses { get; set; }
+
+        public LabelModel()
+        {
+            Expenses = new List<ExpenseModel>();
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace lfmachadodasilva.MyExpenses.Api
                 .ReverseMap();
 
             CreateMap<LabelModel, LabelModel>();
+            CreateMap<LabelModel, LabelAddDto>().ReverseMap();
             CreateMap<LabelModel, LabelDto>().ReverseMap();
             CreateMap<LabelModel, LabelWithValuesDto>().ReverseMap();
 
