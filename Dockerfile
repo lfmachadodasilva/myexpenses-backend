@@ -18,4 +18,4 @@ RUN dotnet publish "MyExpenses.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MyExpenses.dll"]
+CMD ["dotnet", "MyExpenses.dll"]
