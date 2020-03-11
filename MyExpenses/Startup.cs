@@ -30,7 +30,7 @@ namespace MyExpenses
                         Version = "v1"
                     });
             });
-            services.AddMyExpenses();
+            services.AddMyExpenses(Configuration);
             services.AddControllers();
         }
 
@@ -66,6 +66,8 @@ namespace MyExpenses
             {
                 endpoints.MapControllers();
             });
+
+            app.DatabaseMigrate(Configuration);
         }
     }
 }
