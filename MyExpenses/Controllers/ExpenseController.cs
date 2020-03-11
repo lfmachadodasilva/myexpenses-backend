@@ -6,42 +6,42 @@ namespace MyExpenses.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LabelController : ControllerBase
+    public class ExpenseController : ControllerBase
     {
-        private readonly ILabelService _labelService;
+        private readonly IExpenseService _expenseService;
 
-        public LabelController(ILabelService labelService)
+        public ExpenseController(IExpenseService labelService)
         {
-            _labelService = labelService;
+            _expenseService = labelService;
         }
 
-        // GET api/expense
+        // GET api/label
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/expense/5
+        // GET api/label/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
             return "value";
         }
 
-        // POST api/expense
+        // POST api/label
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/expense/5
+        // PUT api/label/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/expense/5
+        // DELETE api/label/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

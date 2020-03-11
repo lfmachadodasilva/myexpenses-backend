@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MyExpenses.Repositories;
 using MyExpenses.Services;
 
 namespace MyExpenses
@@ -18,6 +19,11 @@ namespace MyExpenses
             service.AddTransient<IGroupService, GroupService>();
             service.AddTransient<ILabelService, LabelService>();
             service.AddTransient<IExpenseService, ExpenseService>();
+
+            service.AddTransient<IUserRepository, UserRepository>();
+            service.AddTransient<IGroupRepository, GroupRepository>();
+            service.AddTransient<ILabelRepository, LabelRepository>();
+            service.AddTransient<IExpenseRepository, ExpenseRepository>();
 
             service.AddAutoMapper(typeof(MyExpensesProfile));
 
@@ -70,6 +76,21 @@ namespace MyExpenses
                         context.Database.Migrate();
                     }
                 }
+            }
+
+            var clearDatabaseAndSeedData = configuration.GetSection("WebSettings").GetSection("ClearDatabaseAndSeedData").Value;
+            if (useInMemoryDatabase != null && useInMemoryDatabase == true.ToString())
+            {
+                using (var serviceScope = app.ApplicationServices
+                    .GetRequiredService<IServiceScopeFactory>()
+                    .CreateScope())
+                {
+                    using (var context = serviceScope.ServiceProvider.GetService<MyExpensesContext>())
+                    {
+                        new MyExpensesSeed(context).Run();
+                    }
+                }
+
             }
 
             return app;

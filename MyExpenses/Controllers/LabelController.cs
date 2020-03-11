@@ -1,47 +1,50 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MyExpenses.Models;
 using MyExpenses.Services;
 
 namespace MyExpenses.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ExpenseController : ControllerBase
+    public class LabelController : ControllerBase
     {
         private readonly ILabelService _labelService;
 
-        public ExpenseController(ILabelService labelService)
+        public LabelController(ILabelService labelService)
         {
             _labelService = labelService;
         }
 
-        // GET api/label
+        // GET api/expense
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            // var labels = await _labelService.GetAll();
+            return Ok(await _labelService.GetAll());
         }
 
-        // GET api/label/5
+        // GET api/expense/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
             return "value";
         }
 
-        // POST api/label
+        // POST api/expense
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT api/label/5
+        // PUT api/expense/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/label/5
+        // DELETE api/expense/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
