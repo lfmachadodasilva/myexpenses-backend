@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace MyExpenses
@@ -30,7 +29,29 @@ namespace MyExpenses
                         Description = "Project to control personal expenses",
                         Version = "v1"
                     });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description =
+                        "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                        },
+                        new[] { "readAccess", "writeAccess" }
+                    }
+                });
             });
+
             services.AddMyExpenses(Configuration);
             services.AddControllers();
         }
@@ -43,31 +64,24 @@ namespace MyExpenses
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "V1");
-
-                //options.RoutePrefix = string.Empty;
-
-                //options.OAuthClientId("myexpenses_api_swagger");
-                //options.OAuthAppName("MyExpenses API - Swagger"); // presentation purposes only
             });
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
             app.DatabaseMigrate(Configuration);
         }
     }
