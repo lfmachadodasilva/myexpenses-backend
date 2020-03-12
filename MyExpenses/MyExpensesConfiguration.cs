@@ -1,9 +1,12 @@
 ﻿using System;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using MyExpenses.Repositories;
 using MyExpenses.Services;
 
@@ -30,7 +33,7 @@ namespace MyExpenses
             var useInMemoryDatabase = Environment.GetEnvironmentVariable("MEMORY_DATABASE");
             if (string.IsNullOrEmpty(useInMemoryDatabase))
             {
-                useInMemoryDatabase = configuration.GetSection("WebSettings").GetSection("UseInMemoryDatabase").Value;
+                useInMemoryDatabase = configuration.GetSection("WebSettings:UseInMemoryDatabase").Value;
             }
 
             if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
@@ -39,7 +42,8 @@ namespace MyExpenses
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    connectionString = configuration.GetConnectionString("DefaultConnection");
+                    var connectionStringName = configuration.GetSection("WebSettings:ConnectionString").Value;
+                    connectionString = configuration.GetConnectionString(connectionStringName);
                 }
 
                 service
@@ -54,6 +58,26 @@ namespace MyExpenses
                         options.UseInMemoryDatabase("myexpenses"));
             }
 
+            service
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var projectId = Environment.GetEnvironmentVariable("FIREBASE_APP_NAME");
+                    if (string.IsNullOrEmpty(projectId))
+                    {
+                        projectId = configuration.GetSection("Firebase:ProjectId").Value;
+                    }
+                    options.Authority = $"https://securetoken.google.com/{projectId}";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = $"https://securetoken.google.com/{projectId}",
+                        ValidateAudience = true,
+                        ValidAudience = projectId,
+                        ValidateLifetime = true
+                    };
+                });
+
             return service;
         }
 
@@ -62,7 +86,7 @@ namespace MyExpenses
             var useInMemoryDatabase = Environment.GetEnvironmentVariable("MEMORY_DATABASE");
             if (string.IsNullOrEmpty(useInMemoryDatabase))
             {
-                useInMemoryDatabase = configuration.GetSection("WebSettings").GetSection("UseInMemoryDatabase").Value;
+                useInMemoryDatabase = configuration.GetSection("WebSettings:UseInMemoryDatabase").Value;
             }
 
             if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
@@ -78,8 +102,8 @@ namespace MyExpenses
                 }
             }
 
-            var clearDatabaseAndSeedData = configuration.GetSection("WebSettings").GetSection("ClearDatabaseAndSeedData").Value;
-            if (useInMemoryDatabase != null && useInMemoryDatabase == true.ToString())
+            var clearDatabaseAndSeedData = configuration.GetSection("WebSettings:ClearDatabaseAndSeedData").Value;
+            if (clearDatabaseAndSeedData != null && clearDatabaseAndSeedData == true.ToString())
             {
                 using (var serviceScope = app.ApplicationServices
                     .GetRequiredService<IServiceScopeFactory>()

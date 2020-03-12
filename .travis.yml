@@ -1,28 +1,35 @@
-sudo: required
+language: csharp
+mono: none
+dotnet: 3.1.101
+node_js: 12.2
 
 services:
-    - docker
+  - docker
 
 notifications:
-    email:
-        on_success: never
-        on_failure: change
+  email:
+    on_success: never
+    on_failure: change
 
-before_install:
-    # install heroku CLI
-    - wget -qO- https://toolbelt.heroku.com/install.sh | sh
-    # login to docker registries (dockerhub + heroku)
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
+install:
+  - npm install -g codecov
 
 script:
-    - docker build -t lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER .
-    - docker tag lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER registry.heroku.com/$HEROKU_APP_NAME/web
+  - dotnet restore
+  - dotnet build -c Release
+  - dotnet test --no-build -c Release /p:CollectCoverage=true
+  - docker build -t lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER .
+
+after_success:
+  - codecov -t $CODECOV_TOKEN -f Coverage/*
 
 deploy:
-    provider: script
-    script:
-        docker push lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER;
-        docker push registry.heroku.com/$HEROKU_APP_NAME/web;
-        heroku container:release web --app $HEROKU_APP_NAME
-    branch: master
+  provider: script
+  script: wget -qO- https://toolbelt.heroku.com/install.sh | sh;
+    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+    echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com;
+    docker tag lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER registry.heroku.com/$HEROKU_APP_NAME/web;
+    docker push lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER;
+    docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+    heroku container:release web --app $HEROKU_APP_NAME
+  branch: master

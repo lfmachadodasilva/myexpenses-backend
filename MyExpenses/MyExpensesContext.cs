@@ -1,10 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using MyExpenses.Models;
 
 namespace MyExpenses
 {
     public class MyExpensesContext : DbContext
     {
+        private static readonly ILoggerFactory _myLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddFilter((category, level) =>
+                    category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information)
+                .AddConsole();
+        });
+
         public MyExpensesContext(DbContextOptions<MyExpensesContext> options)
             : base(options)
         {
@@ -29,11 +39,6 @@ namespace MyExpenses
                 .WithMany(t => t.GroupUser)
                 .HasForeignKey(pt => pt.UserId);
 
-            builder
-                .Entity<ExpenseModel>()
-                .HasOne(x => x.Label)
-                .WithMany(x => x.Expenses);
-
             builder.UseIdentityColumns();
         }
 
@@ -41,7 +46,7 @@ namespace MyExpenses
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.UseLoggerFactory(_myLoggerFactory).EnableSensitiveDataLogging();
         }
 
         public DbSet<UserModel> Users { get; set; }

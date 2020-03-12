@@ -28,24 +28,34 @@ namespace MyExpenses
         {
             var models = new List<UserModel>
                 {
+                    //new UserModel
+                    //{
+                    //    //Id = 1,
+                    //    DisplayName = "UserName1",
+                    //},
+                    //new UserModel
+                    //{
+                    //    //Id = 2,
+                    //    DisplayName = "UserName2",
+                    //},
+                    //new UserModel
+                    //{
+                    //    //Id = 3,
+                    //    DisplayName = "UserName3",
+                    //},
                     new UserModel
                     {
-                        //Id = 1,
-                        DisplayName = "UserName1",
+                        Id = "prCSRxTzTyRjaeDr9SzlvY6gAEi2",
+                        Email = "silvaaavlis@gmail.com"
                     },
                     new UserModel
                     {
-                        //Id = 2,
-                        DisplayName = "UserName2",
-                    },
-                    new UserModel
-                    {
-                        //Id = 3,
-                        DisplayName = "UserName3",
+                        Id = "13FAoQ4yNNSl7mUJtQgTQpFeWmU2",
+                        Email = "user@test.com"
                     }
                 };
 
-            List<UserModel> result = new List<UserModel>();
+            var result = new List<UserModel>();
             models.ForEach(model =>
             {
                 result.Add(_context.Add(model).Entity);
@@ -76,7 +86,7 @@ namespace MyExpenses
                     }
                 };
 
-            List<GroupModel> result = new List<GroupModel>();
+            var result = new List<GroupModel>();
             models.ForEach(model =>
             {
                 result.Add(_context.Add(model).Entity);
@@ -126,7 +136,7 @@ namespace MyExpenses
         private IEnumerable<ExpenseModel> AddExpenses(IEnumerable<GroupModel> groups, IEnumerable<LabelModel> labels)
         {
             var result = new List<ExpenseModel>();
-            Random rnd = new Random();
+            var rnd = new Random();
 
             foreach (var group in groups)
             {

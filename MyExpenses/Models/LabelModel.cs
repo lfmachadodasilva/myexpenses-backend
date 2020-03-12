@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyExpenses.Models
@@ -16,8 +15,6 @@ namespace MyExpenses.Models
 
         [ForeignKey(ModelConstants.ForeignKeyGroup)]
         public GroupModel Group { get; set; }
-
-        public IEnumerable<ExpenseModel> Expenses { get; set; }
 
         #endregion
     }
