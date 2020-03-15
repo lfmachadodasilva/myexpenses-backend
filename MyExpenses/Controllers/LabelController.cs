@@ -18,7 +18,6 @@ namespace MyExpenses.Controllers
 
         // GET api/label
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> Get()
         {
             // var labels = await _labelService.GetAll();

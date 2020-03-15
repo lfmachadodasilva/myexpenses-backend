@@ -41,7 +41,8 @@ namespace MyExpenses
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    connectionString = configuration.GetConnectionString("DefaultConnection");
+                    var connectionStringName = configuration.GetSection("WebSettings:ConnectionString").Value;
+                    connectionString = configuration.GetConnectionString(connectionStringName);
                 }
 
                 service

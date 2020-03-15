@@ -5,5 +5,8 @@ services:
         build: .
         ports:
             - 5000:80
-    redis:
-        image: "redis:alpine"
+    mydb:
+        image: images.artifactory.dunnhumby.com/postgres:latest
+        #image: postgres:latest
+        ports:
+            - 5432:5432

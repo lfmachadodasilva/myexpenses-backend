@@ -137,7 +137,7 @@ namespace MyExpenses.Migrations
                         .IsRequired();
 
                     b.HasOne("MyExpenses.Models.LabelModel", "Label")
-                        .WithMany("Expenses")
+                        .WithMany()
                         .HasForeignKey("LabelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

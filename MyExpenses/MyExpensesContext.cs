@@ -29,11 +29,6 @@ namespace MyExpenses
                 .WithMany(t => t.GroupUser)
                 .HasForeignKey(pt => pt.UserId);
 
-            builder
-                .Entity<ExpenseModel>()
-                .HasOne(x => x.Label)
-                .WithMany(x => x.Expenses);
-
             builder.UseIdentityColumns();
         }
 
