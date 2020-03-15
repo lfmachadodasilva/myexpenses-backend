@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyExpenses.Migrations
 {
     [DbContext(typeof(MyExpensesContext))]
-    [Migration("20200311120744_InitialCreate")]
+    [Migration("20200315103513_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -139,7 +139,7 @@ namespace MyExpenses.Migrations
                         .IsRequired();
 
                     b.HasOne("MyExpenses.Models.LabelModel", "Label")
-                        .WithMany("Expenses")
+                        .WithMany()
                         .HasForeignKey("LabelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

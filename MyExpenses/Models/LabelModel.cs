@@ -17,8 +17,6 @@ namespace MyExpenses.Models
         [ForeignKey(ModelConstants.ForeignKeyGroup)]
         public GroupModel Group { get; set; }
 
-        public IEnumerable<ExpenseModel> Expenses { get; set; }
-
         #endregion
     }
 }
