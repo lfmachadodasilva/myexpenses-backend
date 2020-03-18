@@ -17,12 +17,12 @@ before_install:
 
 script:
     - docker build -t lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER .
-    - docker tag lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER registry.heroku.com/$HEROKU_APP_NAME/web
+    - docker tag lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER registry.heroku.com/$HEROKU_APP_NAME/api-csharp
 
 deploy:
     provider: script
     script:
         docker push lfmachadodasilva/myexpenses-backend:myexpenses-backend-$TRAVIS_BUILD_NUMBER;
-        docker push registry.heroku.com/$HEROKU_APP_NAME/web;
-        heroku container:release web --app $HEROKU_APP_NAME
+        docker push registry.heroku.com/$HEROKU_APP_NAME/api-csharp;
+        heroku container:release api-csharp --app $HEROKU_APP_NAME
     branch: master
