@@ -1,50 +1,71 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyExpenses.Models.Domains;
+using MyExpenses.Models.Dtos;
 using MyExpenses.Services;
 
 namespace MyExpenses.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
-        // GET api/user
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var domain = await _userService.GetAllAsync();
+            var dto = _mapper.Map<ICollection<UserDto>>(domain);
+            return Ok(dto);
         }
 
-        // GET api/user/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get(string id)
         {
-            return "value";
+            var domain = await _userService.GetByIdAsync(id);
+            var dto = _mapper.Map<UserDto>(domain);
+            return Ok(dto);
         }
 
-        // POST api/user
+        // POST api/label
         [HttpPost]
-        public void Post([FromBody] string value)
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Post([FromBody] UserDto dto)
         {
+            var domain = _mapper.Map<UserDomain>(dto);
+            var dtoAdded = await _userService.AddAsync(domain);
+            return Ok(_mapper.Map<UserDto>(dtoAdded));
         }
 
-        // PUT api/user/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Put([FromBody] UserDto dto)
         {
+            var domain = _mapper.Map<UserDomain>(dto);
+            var dtoUpdated = await _userService.UpdateAsync(domain);
+            return Ok(_mapper.Map<UserDto>(dtoUpdated));
         }
 
-        // DELETE api/user/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Delete(string id)
         {
+            return Ok(await _userService.DeleteAsync(id));
         }
     }
 }

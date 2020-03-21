@@ -8,7 +8,7 @@
 
   <PropertyGroup>
       <CollectCoverage>true</CollectCoverage>
-      <CoverletOutput>../Coverage/integration-tests-coverage.xml</CoverletOutput>
+      <CoverletOutput>../Coverage/integration-opencover.xml</CoverletOutput>
       <CoverletOutputFormat>opencover</CoverletOutputFormat>
       <Include>[MyExpenses]*</Include>
   </PropertyGroup>

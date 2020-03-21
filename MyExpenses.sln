@@ -9,11 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyExpenses.UnitTests", "MyE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{D056CF19-3110-4175-9247-F58BBDD5F383}"
 	ProjectSection(SolutionItems) = preProject
+		Scripts\dev_certs.sh = Scripts\dev_certs.sh
 		Scripts\ef-update.sh = Scripts\ef-update.sh
 		Scripts\ef_initial_create.sh = Scripts\ef_initial_create.sh
+		Scripts\request_token.sh = Scripts\request_token.sh
+		Scripts\sonar_begin.sh = Scripts\sonar_begin.sh
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyExpenses.IntegrationTests", "MyExpenses.IntegrationTests\MyExpenses.IntegrationTests.csproj", "{2B297825-62E7-42DD-B893-6EC470371806}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyExpenses.IntegrationTests", "MyExpenses.IntegrationTests\MyExpenses.IntegrationTests.csproj", "{2B297825-62E7-42DD-B893-6EC470371806}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

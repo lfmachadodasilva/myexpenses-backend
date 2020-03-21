@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -8,7 +8,7 @@
 
   <PropertyGroup>
       <CollectCoverage>true</CollectCoverage>
-      <CoverletOutput>../Coverage/unit-tests-coverage.xml</CoverletOutput>
+      <CoverletOutput>../Coverage/unit-opencover.xml</CoverletOutput>
       <CoverletOutputFormat>opencover</CoverletOutputFormat>
       <Include>[MyExpenses]*</Include>
   </PropertyGroup>
@@ -17,6 +17,7 @@
     <PackageReference Include="AutoFixture" Version="4.11.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
