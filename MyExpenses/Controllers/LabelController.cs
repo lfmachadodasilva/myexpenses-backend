@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@ namespace MyExpenses.Controllers
     public class LabelController : MyControllerBase
     {
         private readonly ILabelService _labelService;
+        private readonly IMapper _mapper;
 
-        public LabelController(ILabelService labelService, IGroupService groupService)
+        public LabelController(ILabelService labelService, IGroupService groupService, IMapper mapper)
             : base(groupService)
         {
             _labelService = labelService;
+            _mapper = mapper;
         }
 
         [HttpGet]

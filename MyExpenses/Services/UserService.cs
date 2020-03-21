@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using MyExpenses.Models.Domains;
-using MyExpenses.Models.Dtos;
 
 namespace MyExpenses.Services
 {

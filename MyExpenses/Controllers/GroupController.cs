@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyExpenses.Models.Domains;
+using MyExpenses.Models.Dtos;
 using MyExpenses.Services;
 
 namespace MyExpenses.Controllers
@@ -9,42 +14,65 @@ namespace MyExpenses.Controllers
     public class GroupController : ControllerBase
     {
         private readonly IGroupService _groupService;
+        private readonly IMapper _mapper;
 
-        public GroupController(IGroupService groupService)
+        public GroupController(IGroupService groupService, IMapper mapper)
         {
             _groupService = groupService;
+            _mapper = mapper;
         }
 
-        // GET api/group
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var domain = await _groupService.GetAllAsync();
+            var dto = _mapper.Map<ICollection<GroupDto>>(domain);
+            return Ok(dto);
         }
 
-        // GET api/group/5
+        [HttpGet("detailed")]
+        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetWithDetails()
+        {
+            var domain = await _groupService.GetAllWithDetailsAsync();
+            var dto = _mapper.Map<ICollection<GroupDetailsDto>>(domain);
+            return Ok(dto);
+        }
+
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get(string id)
         {
-            return "value";
+            var domain = await _groupService.GetByIdAsync(id);
+            var dto = _mapper.Map<GroupDetailsDto>(domain);
+            return Ok(dto);
         }
 
-        // POST api/group
+        // POST api/label
         [HttpPost]
-        public void Post([FromBody] string value)
+        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Post([FromBody] GroupDto dto)
         {
+            var domain = _mapper.Map<GroupDomain>(dto);
+            var dtoAdded = await _groupService.AddAsync(domain);
+            return Ok(_mapper.Map<GroupDto>(dtoAdded));
         }
 
-        // PUT api/group/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [ProducesResponseType(typeof(GroupDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Put([FromBody] GroupDto dto)
         {
+            var domain = _mapper.Map<GroupDomain>(dto);
+            var dtoUpdated = await _groupService.UpdateAsync(domain);
+            return Ok(_mapper.Map<GroupDto>(dtoUpdated));
         }
 
-        // DELETE api/group/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Delete(string id)
         {
+            return Ok(await _groupService.DeleteAsync(id));
         }
     }
 }

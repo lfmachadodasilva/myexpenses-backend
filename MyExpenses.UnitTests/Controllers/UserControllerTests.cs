@@ -111,7 +111,7 @@ namespace MyExpenses.UnitTests.Controllers
 
         public async Task UserController_Delete_ShouldReturnData()
         {
-            var userToDelete = "ID";
+            const string userToDelete = "ID";
 
             // Arrange
             _userServiceMock

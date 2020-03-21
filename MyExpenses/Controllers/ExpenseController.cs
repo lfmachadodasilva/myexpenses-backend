@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Services;
 
@@ -9,10 +10,12 @@ namespace MyExpenses.Controllers
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseService _expenseService;
+        private readonly IMapper _mapper;
 
-        public ExpenseController(IExpenseService labelService)
+        public ExpenseController(IExpenseService labelService, IMapper mapper)
         {
             _expenseService = labelService;
+            _mapper = mapper;
         }
 
         // GET api/label

@@ -11,9 +11,12 @@ namespace MyExpenses
         {
             // Dto <> Domain
             CreateMap<UserDto, UserDomain>().ReverseMap();
+            CreateMap<GroupDto, GroupDomain>().ReverseMap();
+            CreateMap<GroupDetailsDto, GroupDetailsDomain>().ReverseMap();
 
             // Domain <> Model
             CreateMap<UserDomain, UserModel>().ReverseMap();
+            CreateMap<GroupDomain, GroupModel>().ReverseMap();
         }
     }
 }
