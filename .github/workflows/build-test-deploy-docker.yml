@@ -1,0 +1,51 @@
+name: docker
+
+on:
+    push:
+        branches:
+            - master
+            - "dev-*"
+
+jobs:
+    build-test-deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout 🛎️
+              uses: actions/checkout@v2
+            - name: Install & Build 🛠
+              env:
+                  HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
+              run: docker build . --target build -t build:$GITHUB_RUN_NUMBER
+            - name: Test 🔌
+              run: |
+                  docker build . --target test -t test:$GITHUB_RUN_NUMBER --cache-from build:$GITHUB_RUN_NUMBER
+                  docker run --rm -i test:$GITHUB_RUN_NUMBER
+            - name: Final 📦
+              run: docker build . --target final -t $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER --cache-from build:$GITHUB_RUN_NUMBER
+            - name: Deploy to heroku (dev) 🚀
+              env:
+                  HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
+              run: |
+                  wget -qO- https://cli-assets.heroku.com/install.sh | sh
+                  echo "${{ secrets.HEROKU_PASSWORD }}" | docker login -u "${{ secrets.HEROKU_USERNAME }}" --password-stdin registry.heroku.com
+                  docker tag $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER web
+                  heroku container:push web --app ${{ secrets.HEROKU_APP_NAME }}-dev
+                  heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}-dev
+            - name: Deploy to heroku (prod) 🚀
+              if: github.ref == 'refs/heads/master'
+              env:
+                  HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
+              run: |
+                  envsubst < util/.env.template > .env;
+                  wget -qO- https://cli-assets.heroku.com/install.sh | sh
+                  echo "${{ secrets.HEROKU_PASSWORD }}" | docker login -u "${{ secrets.HEROKU_USERNAME }}" --password-stdin registry.heroku.com
+                  docker tag $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER web
+                  heroku container:push web --app ${{ secrets.HEROKU_APP_NAME }}
+                  heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
+            - name: Deploy to dockerhub 🚀
+              if: github.ref == 'refs/heads/master'
+              run: |
+                  echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+                  docker push $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER;
+                  docker tag $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER $GITHUB_REPOSITORY:latest
+                  docker push $GITHUB_REPOSITORY;
