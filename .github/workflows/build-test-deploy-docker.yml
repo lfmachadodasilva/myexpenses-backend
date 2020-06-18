@@ -16,7 +16,7 @@ jobs:
               env:
                   HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
               run: |
-                  envsubst < MyExpenses/appsettings.Template.json > appsettings.json
+                  envsubst < MyExpenses/appsettings.Template.json > MyExpenses/appsettings.json
                   docker build . --target build -t build:$GITHUB_RUN_NUMBER
             - name: Test 🔌
               run: |
