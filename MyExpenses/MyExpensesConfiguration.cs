@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using MyExpenses.Models;
 using MyExpenses.Repositories;
 using MyExpenses.Services;
 
@@ -29,11 +30,9 @@ namespace MyExpenses
 
             service.AddAutoMapper(typeof(MyExpensesProfile));
 
-            var useInMemoryDatabase = Environment.GetEnvironmentVariable("MEMORY_DATABASE");
-            if (string.IsNullOrEmpty(useInMemoryDatabase))
-            {
-                useInMemoryDatabase = configuration.GetSection("WebSettings:UseInMemoryDatabase").Value;
-            }
+            service.Configure<AppConfig>(configuration.GetSection("AppConfig"));
+
+            var useInMemoryDatabase = configuration.GetSection("AppConfig:UseInMemoryDatabase").Value;
 
             if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
             {
@@ -41,7 +40,7 @@ namespace MyExpenses
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    var connectionStringName = configuration.GetSection("WebSettings:ConnectionString").Value;
+                    var connectionStringName = configuration.GetSection("AppConfig:ConnectionString").Value;
                     connectionString = configuration.GetConnectionString(connectionStringName);
                 }
 
@@ -82,11 +81,7 @@ namespace MyExpenses
 
         public static IApplicationBuilder DatabaseMigrate(this IApplicationBuilder app, IConfiguration configuration)
         {
-            var useInMemoryDatabase = Environment.GetEnvironmentVariable("MEMORY_DATABASE");
-            if (string.IsNullOrEmpty(useInMemoryDatabase))
-            {
-                useInMemoryDatabase = configuration.GetSection("WebSettings:UseInMemoryDatabase").Value;
-            }
+            var useInMemoryDatabase = configuration.GetSection("AppConfig:UseInMemoryDatabase").Value;
 
             if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
             {
@@ -101,7 +96,7 @@ namespace MyExpenses
                 }
             }
 
-            var clearDatabaseAndSeedData = configuration.GetSection("WebSettings:ClearDatabaseAndSeedData").Value;
+            var clearDatabaseAndSeedData = configuration.GetSection("AppConfig:ClearDatabaseAndSeedData").Value;
             if (clearDatabaseAndSeedData != null && clearDatabaseAndSeedData == true.ToString())
             {
                 using (var serviceScope = app.ApplicationServices

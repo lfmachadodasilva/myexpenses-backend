@@ -15,7 +15,9 @@ jobs:
             - name: Restore & Build 🛠
               env:
                   HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
-              run: docker build . --target build -t build:$GITHUB_RUN_NUMBER
+              run: |
+                  envsubst < MyExpenses/appsettings.Template.json > appsettings.json
+                  docker build . --target build -t build:$GITHUB_RUN_NUMBER
             - name: Test 🔌
               run: |
                   docker build . --target test -t test:$GITHUB_RUN_NUMBER --cache-from build:$GITHUB_RUN_NUMBER

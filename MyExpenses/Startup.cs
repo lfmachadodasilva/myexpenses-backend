@@ -19,6 +19,8 @@ namespace MyExpenses
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var buildVersion = Configuration.GetSection("AppConfig:BuildVersion").Value;
+
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc(
@@ -26,7 +28,7 @@ namespace MyExpenses
                     new OpenApiInfo
                     {
                         Title = "MyExpenses Api",
-                        Description = "Project to control personal expenses",
+                        Description = $"Project to control personal expenses. buildVersion: {buildVersion}",
                         Version = "v1"
                     });
 
