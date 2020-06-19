@@ -4,8 +4,8 @@
 
 ## Available end-points
 
--   [Development](https://myexpenses-backend-dev.herokuapp.com/)
--   [Production](https://myexpenses-backend.herokuapp.com/)
+-   [Development](https://myexpenses-backend-dev.herokuapp.com/swagger)
+-   [Production](https://myexpenses-backend.herokuapp.com/swagger)
 
 ## Docker
 

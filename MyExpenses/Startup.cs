@@ -19,6 +19,22 @@ namespace MyExpenses
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins(
+                                "http://localhost:3000",
+                                "https://myexpenses-ui-dev.herokuapp.com",
+                                "https://myexpenses-ui.herokuapp.com")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    });
+            });
+
             var buildVersion = Configuration.GetSection("AppConfig:BuildVersion").Value;
 
             services.AddSwaggerGen(options =>
@@ -66,6 +82,7 @@ namespace MyExpenses
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowAll");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
