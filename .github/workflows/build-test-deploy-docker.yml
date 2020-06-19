@@ -15,6 +15,10 @@ jobs:
             - name: Restore & Build 🛠
               env:
                   HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
+                  HEROKU_DB_HOST: ${{ secrets.HEROKU_DB_HOST_DEV }}
+                  HEROKU_DB_DATABASE: ${{ secrets.HEROKU_DB_DATABASE_DEV }}
+                  HEROKU_DB_USER: ${{ secrets.HEROKU_DB_USER_DEV }}
+                  HEROKU_DB_PASSWORD: ${{ secrets.HEROKU_DB_PASSWORD_DEV }}
               run: |
                   envsubst < MyExpenses/appsettings.Template.json > MyExpenses/appsettings.json
                   docker build . --target build -t build:$GITHUB_RUN_NUMBER
@@ -37,7 +41,12 @@ jobs:
               if: github.ref == 'refs/heads/master'
               env:
                   HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
+                  HEROKU_DB_HOST: ${{ secrets.HEROKU_DB_HOST }}
+                  HEROKU_DB_DATABASE: ${{ secrets.HEROKU_DB_DATABASE }}
+                  HEROKU_DB_USER: ${{ secrets.HEROKU_DB_USER }}
+                  HEROKU_DB_PASSWORD: ${{ secrets.HEROKU_DB_PASSWORD }}
               run: |
+                  envsubst < MyExpenses/appsettings.Template.json > MyExpenses/appsettings.json
                   wget -qO- https://cli-assets.heroku.com/install.sh | sh
                   echo "${{ secrets.HEROKU_PASSWORD }}" | docker login -u "${{ secrets.HEROKU_USERNAME }}" --password-stdin registry.heroku.com
                   docker tag $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER web
