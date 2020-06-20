@@ -38,16 +38,23 @@ namespace MyExpenses.Repositories
         /// <summary>
         /// Add
         /// </summary>
-        /// <param name="model">mode to be added</param>
+        /// <param name="model">model to be added</param>
         /// <returns>model added</returns>
         Task<TModel> AddAsync(TModel model);
 
         /// <summary>
-        /// Remove
+        /// Add or update
+        /// </summary>
+        /// <param name="model">model to be added or updated</param>
+        /// <returns>model added or updated</returns>
+        Task<TModel> AddOrUpdateAsync(TModel model);
+
+        /// <summary>
+        /// Delete
         /// </summary>
         /// <param name="id">id</param>
         /// <returns>True if was removed and false otherwise</returns>
-        Task<bool> RemoveAsync(TModelType id);
+        Task<bool> DeleteAsync(TModelType id);
     }
 
     /// <inheritdoc />
@@ -128,7 +135,31 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> RemoveAsync(TModelType id)
+        public virtual async Task<TModel> AddOrUpdateAsync(TModel model)
+        {
+            if (model == null)
+            {
+                //_logger.LogInformation("update: null object to update");
+                return null;
+            }
+
+            var existModel = await GetByIdAsync(model.Id);
+            if (existModel == null)
+            {
+                //_logger.LogInformation($"update: {model.Id} does not exists");
+                return await AddAsync(model);
+            }
+
+            // copy attributes
+            _mapper.Map(model, existModel);
+
+            //_logger.LogInformation($"updated: {model.Id}");
+
+            return existModel;
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<bool> DeleteAsync(TModelType id)
         {
             TModel model = await GetByIdAsync(id);
             if (model == null)

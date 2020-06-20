@@ -19,15 +19,27 @@ jobs:
                   HEROKU_DB_DATABASE: ${{ secrets.HEROKU_DB_DATABASE_DEV }}
                   HEROKU_DB_USER: ${{ secrets.HEROKU_DB_USER_DEV }}
                   HEROKU_DB_PASSWORD: ${{ secrets.HEROKU_DB_PASSWORD_DEV }}
+                  FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY_DEV }}
+                  FIREBASE_PROJECT: ${{ secrets.FIREBASE_PROJECT_DEV }}
               run: |
                   envsubst < MyExpenses/appsettings.Template.json > MyExpenses/appsettings.json
                   docker build . --target build -t build:$GITHUB_RUN_NUMBER
             - name: Test 🔌
               run: |
                   docker build . --target test -t test:$GITHUB_RUN_NUMBER --cache-from build:$GITHUB_RUN_NUMBER
-                  docker run --rm -i test:$GITHUB_RUN_NUMBER
+                  docker run --rm -i -v $PWD/coverage:/app/coverage test:$GITHUB_RUN_NUMBER
             - name: Final 📦
               run: docker build . --target final -t $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER --cache-from build:$GITHUB_RUN_NUMBER
+            - name: Publish Codecov 📈
+              uses: codecov/codecov-action@v1
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  file: coverage/unittest-opencover.xml
+            - name: Deploy to github 🚀
+              run: |
+                  echo "${{ secrets.GH_TOKEN }}" | docker login -u lfmachadodasilva --password-stdin docker.pkg.github.com
+                  docker tag $GITHUB_REPOSITORY:$GITHUB_RUN_NUMBER docker.pkg.github.com/$GITHUB_REPOSITORY/${GITHUB_REF##*/}:$GITHUB_RUN_NUMBER
+                  docker push docker.pkg.github.com/$GITHUB_REPOSITORY/${GITHUB_REF##*/}:$GITHUB_RUN_NUMBER
             - name: Deploy to heroku (dev) 🚀
               env:
                   HEROKU_API_KEY: ${{ secrets.HEROKU_PASSWORD }}
@@ -45,6 +57,8 @@ jobs:
                   HEROKU_DB_DATABASE: ${{ secrets.HEROKU_DB_DATABASE }}
                   HEROKU_DB_USER: ${{ secrets.HEROKU_DB_USER }}
                   HEROKU_DB_PASSWORD: ${{ secrets.HEROKU_DB_PASSWORD }}
+                  FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY_PROD }}
+                  FIREBASE_PROJECT: ${{ secrets.FIREBASE_PROJECT_PROD }}
               run: |
                   envsubst < MyExpenses/appsettings.Template.json > MyExpenses/appsettings.json
                   wget -qO- https://cli-assets.heroku.com/install.sh | sh

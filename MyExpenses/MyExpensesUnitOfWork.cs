@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace MyExpenses
 {
@@ -34,9 +33,7 @@ namespace MyExpenses
         /// <inheritdoc />
         public Task<int> CommitAsync()
         {
-            throw new NotImplementedException();
-
-            // return _context.SaveChangesAsync();
+            return _context.SaveChangesAsync();
         }
     }
 }

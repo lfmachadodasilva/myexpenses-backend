@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyExpenses.Models;
 using MyExpenses.Services;
 
 namespace MyExpenses.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -17,34 +23,75 @@ namespace MyExpenses.Controllers
 
         // GET api/user
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        [ProducesResponseType(typeof(ICollection<UserModel>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll()
         {
-            return new string[] { "value1", "value2" };
+            var models = await _userService.GetAllAsync();
+            return Ok(models);
         }
 
-        // GET api/user/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
+        // // GET api/user/5
+        // [HttpGet("{id}")]
+        // [ProducesResponseType(typeof(ICollection<UserModel>), StatusCodes.Status200OK)]
+        // public async Task<IActionResult> Get(string id)
+        // {
+        //     var model = await _userService.GetAsync(id);
+        //     return Ok(model);
+        // }
 
-        // POST api/user
         [HttpPost]
-        public void Post([FromBody] string value)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Post([FromBody] UserModel value)
         {
+            try
+            {
+                var model = await _userService.AddOrUpdateAsync(value);
+                return Ok(model);
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e);
+            }
         }
 
-        // PUT api/user/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        // // POST api/user
+        // [HttpPost]
+        // [ProducesResponseType(StatusCodes.Status201Created)]
+        // [ProducesResponseType(typeof(ModelBaseString), StatusCodes.Status409Conflict)]
+        // public async Task<ActionResult<UserModel>> Post([FromBody] UserModelToAdd value)
+        // {
+        //     try
+        //     {
+        //         var model = await _userService.AddAsync(value);
+        //         return Created("post", model);
+        //     }
+        //     catch (DbUpdateException e)
+        //     {
+        //         if (e.InnerException is Npgsql.PostgresException postgresException &&
+        //             postgresException.SqlState.Equals("23505"))
+        //         {
+        //             return Conflict(new { id = value.Id });
+        //         }
+        //         return BadRequest();
+        //     }
+        // }
 
-        // DELETE api/user/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        // // PUT api/user/5
+        // [HttpPut("{id}")]
+        // [ProducesResponseType(typeof(UserModel), StatusCodes.Status200OK)]
+        // public async Task<IActionResult> Put([FromBody] UserModel value)
+        // {
+        //     var model = await _userService.UpdateAsync(value);
+        //     return Ok(model);
+        // }
+
+        // // DELETE api/user/5
+        // [HttpDelete("{id}")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // public async Task<IActionResult> Delete(string id)
+        // {
+        //     await _userService.DeleteAsync(id);
+        //     return Ok();
+        // }
     }
 }

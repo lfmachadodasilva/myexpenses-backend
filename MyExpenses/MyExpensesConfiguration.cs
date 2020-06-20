@@ -33,7 +33,6 @@ namespace MyExpenses
             service.Configure<AppConfig>(configuration.GetSection("AppConfig"));
 
             var useInMemoryDatabase = configuration.GetSection("AppConfig:UseInMemoryDatabase").Value;
-
             if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
             {
                 var migrationAssembly = configuration.GetSection("MigrationAssembly").Value;
@@ -60,11 +59,7 @@ namespace MyExpenses
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    var projectId = Environment.GetEnvironmentVariable("FIREBASE_APP_NAME");
-                    if (string.IsNullOrEmpty(projectId))
-                    {
-                        projectId = configuration.GetSection("Firebase:ProjectId").Value;
-                    }
+                    var projectId = configuration.GetSection("Firebase:ProjectId").Value;
                     options.Authority = $"https://securetoken.google.com/{projectId}";
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -91,6 +86,7 @@ namespace MyExpenses
                 {
                     using (var context = serviceScope.ServiceProvider.GetService<MyExpensesContext>())
                     {
+                        // context.Database.EnsureDeleted();
                         context.Database.Migrate();
                     }
                 }
@@ -108,7 +104,6 @@ namespace MyExpenses
                         new MyExpensesSeed(context).Run();
                     }
                 }
-
             }
 
             return app;

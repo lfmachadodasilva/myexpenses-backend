@@ -1,4 +1,4 @@
-# MyExpenses ![docker](https://github.com/lfmachadodasilva/myexpenses-backend/workflows/docker/badge.svg)
+# MyExpenses ![docker](https://github.com/lfmachadodasilva/myexpenses-backend/workflows/docker/badge.svg) [![codecov](https://codecov.io/gh/lfmachadodasilva/myexpenses-backend/branch/master/graph/badge.svg)](https://codecov.io/gh/lfmachadodasilva/myexpenses-backend)
 
 #### Project to control personal expenses
 
