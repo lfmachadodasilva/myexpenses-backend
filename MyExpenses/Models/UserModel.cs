@@ -12,6 +12,15 @@ namespace MyExpenses.Models
 
         public string PhotoUrl { get; set; }
 
-        public ICollection<GroupUserModel> GroupUser { get; set; }
+        // public ICollection<GroupUserModel> GroupUser { get; set; }
+    }
+
+    public class UserModelToAdd : ModelBaseString
+    {
+        public string DisplayName { get; set; }
+
+        public string Email { get; set; }
+
+        public string PhotoUrl { get; set; }
     }
 }

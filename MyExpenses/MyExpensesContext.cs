@@ -19,15 +19,15 @@ namespace MyExpenses
                 .Entity<GroupUserModel>()
                 .HasKey(x => new { x.GroupId, x.UserId });
 
-            builder.Entity<GroupUserModel>()
-                .HasOne(pt => pt.Group)
-                .WithMany(p => p.GroupUser)
-                .HasForeignKey(pt => pt.GroupId);
+            // builder.Entity<GroupUserModel>()
+            //     .HasOne(pt => pt.Group)
+            //     .WithMany(p => p.GroupUser)
+            //     .HasForeignKey(pt => pt.GroupId);
 
-            builder.Entity<GroupUserModel>()
-                .HasOne(pt => pt.User)
-                .WithMany(t => t.GroupUser)
-                .HasForeignKey(pt => pt.UserId);
+            // builder.Entity<GroupUserModel>()
+            //     .HasOne(pt => pt.User)
+            //     .WithMany(t => t.GroupUser)
+            //     .HasForeignKey(pt => pt.UserId);
 
             builder.UseIdentityColumns();
         }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MyExpenses.Models;
 
 namespace MyExpenses
 {
@@ -6,6 +7,8 @@ namespace MyExpenses
     {
         public MyExpensesProfile()
         {
+            CreateMap<UserModel, UserModelToAdd>().ReverseMap();
+            CreateMap<UserModel, UserModel>().ReverseMap();
         }
     }
 }
