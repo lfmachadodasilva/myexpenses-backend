@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyExpenses.Models;
 using MyExpenses.Services;
@@ -48,33 +47,95 @@ namespace MyExpenses.Controllers
         // GET api/group/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GroupGetFullModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok();
+            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var result = await _groupService.GetByIdAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            if (!result.Users.Any(gu => gu.Id.Equals(userId)))
+            {
+                return Forbid();
+            }
+
+            return Ok(result);
         }
 
         // POST api/group
         [HttpPost]
-        [ProducesResponseType(typeof(GroupGetFullModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Post([FromBody] GroupGetFullModel value)
+        [ProducesResponseType((typeof(GroupManageModel)), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> Post([FromBody] GroupManageModel value)
         {
-            return Ok();
+            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            if (!value.Users.Any(u => u.Id.Equals(userId)))
+            {
+                return Forbid();
+            }
+
+            var model = await _groupService.AddAsync(value);
+            if (model == null)
+            {
+                return BadRequest();
+            }
+            return Ok(model);
         }
 
         // PUT api/group
         [HttpPut]
-        [ProducesResponseType(typeof(GroupGetFullModel), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Put([FromBody] GroupGetFullModel value)
+        [ProducesResponseType(typeof(GroupManageModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Put([FromBody] GroupManageModel value)
         {
-            return Ok();
+            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            if (!value.Users.Any(u => u.Id.Equals(userId)))
+            {
+                return Forbid();
+            }
+
+            try
+            {
+                var model = await _groupService.UpdateAsync(value);
+                if (model == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
 
         }
 
         // DELETE api/group/5
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public void Delete(int id)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
         {
+            var result = await _groupService.GetByIdAsync(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            if (!result.Users.Any(gu => gu.Id.Equals(userId)))
+            {
+                return Forbid();
+            }
+
+            await _groupService.DeleteAsync(id);
+
+            return Ok();
         }
     }
 }

@@ -22,6 +22,13 @@ namespace MyExpenses.Repositories
         Task<List<TModel>> GetAll(params Expression<Func<TModel, object>>[] includes);
 
         /// <summary>
+        /// Check if exist
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>true if exist and false otherwise</returns>
+        Task<bool> ExistAsync(TModelType id);
+
+        /// <summary>
         /// Get by id
         /// </summary>
         /// <param name="id">id</param>
@@ -84,6 +91,16 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
+        public virtual Task<bool> ExistAsync(TModelType id)
+        {
+            //_logger.LogInformation($"get by id: {id}");
+
+            IQueryable<TModel> models = _context.Set<TModel>();
+
+            return models.AnyAsync(x => x.Id.Equals(id));
+        }
+
+        /// <inheritdoc />
         public virtual Task<TModel> GetByIdAsync(TModelType id)
         {
             //_logger.LogInformation($"get by id: {id}");
@@ -106,11 +123,11 @@ namespace MyExpenses.Repositories
             if (existModel == null)
             {
                 //_logger.LogInformation($"update: {model.Id} does not exists");
-                return null;
+                throw new KeyNotFoundException();
             }
 
             // copy attributes
-            _mapper.Map(model, existModel);
+            _mapper.Map<TModel, TModel>(model, existModel);
 
             //_logger.LogInformation($"updated: {model.Id}");
 
@@ -165,7 +182,7 @@ namespace MyExpenses.Repositories
             if (model == null)
             {
                 //_logger.LogInformation($"delete: {id} does not exists");
-                return false;
+                throw new KeyNotFoundException();
             }
 
             var result = _context.Remove(model) != null;

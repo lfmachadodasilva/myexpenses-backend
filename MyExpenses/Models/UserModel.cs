@@ -16,8 +16,4 @@ namespace MyExpenses.Models
 
         public string PhotoUrl { get; set; }
     }
-
-    public class IdentityUserModel : UserModel
-    {
-    }
 }

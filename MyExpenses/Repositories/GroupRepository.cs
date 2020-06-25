@@ -27,7 +27,17 @@ namespace MyExpenses.Repositories
             //_logger.LogInformation("get all");
             return _context.Groups
                 .Include(g => g.GroupUser)
-                .ThenInclude(gu => gu.User).ToListAsync();
+                    .ThenInclude(gu => gu.User)
+                .ToListAsync();
+        }
+
+        public override Task<GroupModel> GetByIdAsync(long id)
+        {
+            //_logger.LogInformation("get all");
+            return _context.Groups
+                .Include(g => g.GroupUser)
+                    .ThenInclude(gu => gu.User)
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
     }
 }
