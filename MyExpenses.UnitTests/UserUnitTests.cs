@@ -10,6 +10,11 @@ namespace MyExpenses.UnitTests
 {
     public class UserUnitTests : UnitTestBase
     {
+        public UserUnitTests() : base()
+        {
+            AddUsers();
+        }
+
         [Fact]
         public async void User_GetAll_ShouldReturnData()
         {
