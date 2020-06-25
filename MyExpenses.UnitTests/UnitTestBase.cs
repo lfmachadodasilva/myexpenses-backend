@@ -29,10 +29,11 @@ namespace MyExpenses.UnitTests
             var services = new ServiceCollection()
                 .AddMyExpenses(config)
                 // add controllers
-                .AddTransient<UserController>()
                 .AddTransient<GroupController>()
+                .AddTransient<UserController>()
                 // replace by mock
                 .AddSingleton<IValidateHelper>(ValidateHelperMock.Object)
+                // automapper
                 .AddAutoMapper(typeof(MyExpensesProfile));
 
             // create service collection

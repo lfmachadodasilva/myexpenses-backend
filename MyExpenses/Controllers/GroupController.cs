@@ -27,9 +27,9 @@ namespace MyExpenses.Controllers
         // GET api/group
         [HttpGet]
         [ProducesResponseType(typeof(ICollection<GroupGetModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
-            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             var results = await _groupService.GetAllAsync(userId);
             return Ok(results);
         }
@@ -37,9 +37,9 @@ namespace MyExpenses.Controllers
         // GET api/group/full
         [HttpGet("full")]
         [ProducesResponseType(typeof(ICollection<GroupGetFullModel>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetFull()
+        public async Task<IActionResult> GetAllFull()
         {
-            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             var results = await _groupService.GetAllFullAsync(userId);
             return Ok(results);
         }
@@ -51,7 +51,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             var result = await _groupService.GetByIdAsync(id);
             if (result == null)
             {
@@ -71,7 +71,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Post([FromBody] GroupManageModel value)
         {
-            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             if (!value.Users.Any(u => u.Id.Equals(userId)))
             {
                 return Forbid();
@@ -92,7 +92,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Put([FromBody] GroupManageModel value)
         {
-            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             if (!value.Users.Any(u => u.Id.Equals(userId)))
             {
                 return Forbid();
@@ -112,7 +112,6 @@ namespace MyExpenses.Controllers
             {
                 return NotFound();
             }
-
         }
 
         // DELETE api/group/5
@@ -127,7 +126,7 @@ namespace MyExpenses.Controllers
             {
                 return NotFound();
             }
-            var userId = _validateHelper.GetUserId(HttpContext.User.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             if (!result.Users.Any(gu => gu.Id.Equals(userId)))
             {
                 return Forbid();

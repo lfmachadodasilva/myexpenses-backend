@@ -54,7 +54,7 @@ namespace MyExpenses
             {
                 service
                     .AddDbContext<MyExpensesContext>(options =>
-                        options.UseInMemoryDatabase("myexpenses"));
+                        options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
             }
 
             service
