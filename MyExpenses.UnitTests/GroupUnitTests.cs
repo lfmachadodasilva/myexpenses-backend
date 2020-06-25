@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MyExpenses.Models;
 using System.Security.Claims;
 using Moq;
+using System.Threading.Tasks;
 
 namespace MyExpenses.UnitTests
 {
@@ -19,7 +20,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void Group_GetAll_ShouldReturnData()
+        public async Task Group_GetAll_ShouldReturnData()
         {
             var controller = ServiceProvider.GetService<GroupController>();
             var results = await controller.GetAll();
@@ -31,7 +32,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void Group_GetAllWithInvalidUser_ShouldNotReturnData()
+        public async Task Group_GetAllWithInvalidUser_ShouldNotReturnData()
         {
             ValidateHelperMock
                 .Setup(x => x.GetUserId(It.IsAny<ClaimsIdentity>()))
@@ -47,7 +48,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void Group_GetAllFull_ShouldReturnData()
+        public async Task Group_GetAllFull_ShouldReturnData()
         {
             var controller = ServiceProvider.GetService<GroupController>();
             var results = await controller.GetAllFull();
@@ -59,7 +60,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void Group_GetAllFullWithInvalidUser_ShouldNotReturnData()
+        public async Task Group_GetAllFullWithInvalidUser_ShouldNotReturnData()
         {
             ValidateHelperMock
                 .Setup(x => x.GetUserId(It.IsAny<ClaimsIdentity>()))

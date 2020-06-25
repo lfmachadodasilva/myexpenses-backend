@@ -5,6 +5,7 @@ using MyExpenses.Controllers;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using MyExpenses.Models;
+using System.Threading.Tasks;
 
 namespace MyExpenses.UnitTests
 {
@@ -16,7 +17,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void User_GetAll_ShouldReturnData()
+        public async Task User_GetAll_ShouldReturnData()
         {
             var controller = ServiceProvider.GetService<UserController>();
             var results = await controller.GetAll();
@@ -27,7 +28,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void User_PostNewUser_ShouldAdd()
+        public async Task User_PostNewUser_ShouldAdd()
         {
             var newUser = new UserModel
             {
@@ -45,7 +46,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async void User_PostExistingUser_ShouldUpdate()
+        public async Task User_PostExistingUser_ShouldUpdate()
         {
             var user = new UserModel
             {
