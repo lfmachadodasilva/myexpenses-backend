@@ -49,7 +49,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(typeof(GroupGetFullModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(long id)
         {
             var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             var result = await _groupService.GetByIdAsync(id);
@@ -72,7 +72,7 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> Post([FromBody] GroupManageModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
-            if (!value.Users.Any(u => u.Id.Equals(userId)))
+            if (value != null && !value.Users.Any(u => u.Id.Equals(userId)))
             {
                 return Forbid();
             }
@@ -93,7 +93,7 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> Put([FromBody] GroupManageModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
-            if (!value.Users.Any(u => u.Id.Equals(userId)))
+            if (value != null && !value.Users.Any(u => u.Id.Equals(userId)))
             {
                 return Forbid();
             }
@@ -106,7 +106,7 @@ namespace MyExpenses.Controllers
                     return BadRequest();
                 }
 
-                return Ok();
+                return Ok(model);
             }
             catch (KeyNotFoundException)
             {
@@ -119,7 +119,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             var result = await _groupService.GetByIdAsync(id);
             if (result == null)
@@ -132,7 +132,10 @@ namespace MyExpenses.Controllers
                 return Forbid();
             }
 
-            await _groupService.DeleteAsync(id);
+            if (!await _groupService.DeleteAsync(id))
+            {
+                return BadRequest();
+            }
 
             return Ok();
         }

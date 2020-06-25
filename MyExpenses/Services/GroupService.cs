@@ -14,7 +14,7 @@ namespace MyExpenses.Services
         Task<GroupGetFullModel> GetByIdAsync(long id);
         Task<GroupManageModel> AddAsync(GroupManageModel model);
         Task<GroupManageModel> UpdateAsync(GroupManageModel model);
-        Task<bool> DeleteAsync(int id);
+        Task<bool> DeleteAsync(long id);
     }
 
     public class GroupService : IGroupService
@@ -68,7 +68,7 @@ namespace MyExpenses.Services
             return result > 0 ? _mapper.Map<GroupManageModel>(updatedModel) : null;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(long id)
         {
             _unitOfWork.BeginTransaction();
             var deleted = await _repository.DeleteAsync(id);
