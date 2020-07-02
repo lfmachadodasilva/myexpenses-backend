@@ -12,4 +12,20 @@ namespace MyExpenses.Models
 
         public ICollection<GroupUserModel> GroupUser { get; set; }
     }
+
+    public class GroupGetModel : ModelBaseNumber
+    {
+        [Required]
+        public string Name { get; set; }
+    }
+
+    public class GroupGetFullModel : GroupGetModel
+    {
+        public ICollection<UserModel> Users { get; set; }
+    }
+
+    public class GroupManageModel : GroupGetModel
+    {
+        public ICollection<UserModelBase> Users { get; set; }
+    }
 }

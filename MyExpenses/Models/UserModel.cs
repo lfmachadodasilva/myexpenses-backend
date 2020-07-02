@@ -1,21 +1,14 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyExpenses.Models
 {
-    [Table(ModelConstants.TableUser)]
-    public class UserModel : ModelBaseString
+    public class UserModelBase : ModelBaseString
     {
-        public string DisplayName { get; set; }
-
-        public string Email { get; set; }
-
-        public string PhotoUrl { get; set; }
-
-        // public ICollection<GroupUserModel> GroupUser { get; set; }
     }
 
-    public class UserModelToAdd : ModelBaseString
+    [Table(ModelConstants.TableUser)]
+    public class UserModel : UserModelBase
     {
         public string DisplayName { get; set; }
 

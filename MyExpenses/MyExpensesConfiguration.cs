@@ -28,6 +28,8 @@ namespace MyExpenses
             service.AddTransient<ILabelRepository, LabelRepository>();
             service.AddTransient<IExpenseRepository, ExpenseRepository>();
 
+            service.AddTransient<IValidateHelper, ValidateHelper>();
+
             service.AddAutoMapper(typeof(MyExpensesProfile));
 
             service.Configure<AppConfig>(configuration.GetSection("AppConfig"));
@@ -52,7 +54,7 @@ namespace MyExpenses
             {
                 service
                     .AddDbContext<MyExpensesContext>(options =>
-                        options.UseInMemoryDatabase("myexpenses"));
+                        options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
             }
 
             service
