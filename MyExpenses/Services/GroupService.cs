@@ -12,7 +12,7 @@ namespace MyExpenses.Services
         Task<ICollection<GroupGetModel>> GetAllAsync(string userId);
         Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string userId);
         Task<GroupGetFullModel> GetByIdAsync(long id);
-        Task<GroupManageModel> AddAsync(GroupManageModel model);
+        Task<GroupManageModel> AddAsync(GroupAddModel model);
         Task<GroupManageModel> UpdateAsync(GroupManageModel model);
         Task<bool> DeleteAsync(long id);
     }
@@ -32,7 +32,7 @@ namespace MyExpenses.Services
 
         public async Task<ICollection<GroupGetModel>> GetAllAsync(string userId)
         {
-            var models = await _repository.GetAll();
+            var models = await _repository.GetAllAsync();
             var modelsFiltered = models.Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)));
 
             return _mapper.Map<ICollection<GroupGetModel>>(modelsFiltered);
@@ -40,7 +40,7 @@ namespace MyExpenses.Services
 
         public async Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string userId)
         {
-            var models = await _repository.GetAll();
+            var models = await _repository.GetAllAsync();
             var modelsFiltered = models.Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)));
 
             return _mapper.Map<ICollection<GroupGetFullModel>>(modelsFiltered);
@@ -52,7 +52,7 @@ namespace MyExpenses.Services
             return _mapper.Map<GroupGetFullModel>(model);
         }
 
-        public async Task<GroupManageModel> AddAsync(GroupManageModel model)
+        public async Task<GroupManageModel> AddAsync(GroupAddModel model)
         {
             _unitOfWork.BeginTransaction();
             var addedModel = await _repository.AddAsync(_mapper.Map<GroupModel>(model));

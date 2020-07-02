@@ -5,8 +5,6 @@ using MyExpenses.Controllers;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using MyExpenses.Models;
-using System.Security.Claims;
-using Moq;
 using System.Threading.Tasks;
 
 namespace MyExpenses.UnitTests
@@ -106,7 +104,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_Post_ShouldReturnData()
         {
-            var model = new GroupManageModel
+            var model = new GroupAddModel
             {
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
@@ -125,7 +123,7 @@ namespace MyExpenses.UnitTests
         {
             MockInvalidUser();
 
-            var model = new GroupManageModel
+            var model = new GroupAddModel
             {
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
@@ -139,7 +137,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_PostWithInvalidUser2_ShouldReturnForbid()
         {
-            var model = new GroupManageModel
+            var model = new GroupAddModel
             {
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultInvalidUser } }
@@ -252,7 +250,7 @@ namespace MyExpenses.UnitTests
         }
 
         [Fact]
-        public async Task Group_DeleteWithInvalidUser_ShouldReturnNotFound()
+        public async Task Group_DeleteWithInvalidUser_ShouldReturnForbid()
         {
             MockInvalidUser();
 

@@ -19,6 +19,14 @@ namespace MyExpenses.Models
         public string Name { get; set; }
     }
 
+    public class GroupAddModel
+    {
+        [Required]
+        public string Name { get; set; }
+
+        public ICollection<UserModelBase> Users { get; set; }
+    }
+
     public class GroupGetFullModel : GroupGetModel
     {
         public ICollection<UserModel> Users { get; set; }

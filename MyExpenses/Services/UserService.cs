@@ -31,7 +31,7 @@ namespace MyExpenses.Services
 
         public async Task<ICollection<UserModel>> GetAllAsync()
         {
-            return await _repository.GetAll();
+            return await _repository.GetAllAsync();
         }
 
         // public async Task<UserModel> GetAsync(string id)

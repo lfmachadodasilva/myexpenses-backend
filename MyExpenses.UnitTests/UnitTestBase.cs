@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MyExpenses.Controllers;
+using MyExpenses.Helpers;
 using MyExpenses.Models;
 using MyExpenses.Services;
 
@@ -20,6 +21,11 @@ namespace MyExpenses.UnitTests
         protected readonly string DefaultInvalidUser = "invalid";
         protected readonly long DefaultGroup = 1;
         protected readonly long DefaultInvalidGroup = 100;
+        protected readonly long DefaultLabel = 1;
+        protected readonly long DefaultLabelOtherGroup = 4;
+        protected readonly long DefaultInvalidLabel = 100;
+        protected readonly int DefaultMonth = 1;
+        protected readonly int DefaultYear = 2020;
 
         protected UnitTestBase()
         {
@@ -35,6 +41,7 @@ namespace MyExpenses.UnitTests
                 .AddMyExpenses(config)
                 // add controllers
                 .AddTransient<GroupController>()
+                .AddTransient<LabelController>()
                 .AddTransient<UserController>()
                 // replace by mock
                 .AddSingleton<IValidateHelper>(ValidateHelperMock.Object)
@@ -120,6 +127,55 @@ namespace MyExpenses.UnitTests
                     }
                 }
             });
+            unitOfWork.CommitAsync().Wait();
+        }
+
+        protected void AddLabels()
+        {
+            var context = ServiceProvider.GetService<MyExpensesContext>();
+            var unitOfWork = ServiceProvider.GetService<IUnitOfWork>();
+
+            unitOfWork.BeginTransaction();
+
+            context.Add(new LabelModel
+            {
+                Id = 1,
+                Name = "Label 1",
+                GroupId = DefaultGroup
+            });
+            context.Add(new LabelModel
+            {
+                Id = 2,
+                Name = "Label 2",
+                GroupId = DefaultGroup
+            });
+            context.Add(new LabelModel
+            {
+                Id = 3,
+                Name = "Label 3",
+                GroupId = DefaultGroup
+            });
+
+            context.Add(new LabelModel
+            {
+                Id = 4,
+                Name = "Label 4",
+                GroupId = 2
+            });
+            context.Add(new LabelModel
+            {
+                Id = 5,
+                Name = "Label 5",
+                GroupId = 2
+            });
+
+            context.Add(new LabelModel
+            {
+                Id = 6,
+                Name = "Label 6",
+                GroupId = 3
+            });
+
             unitOfWork.CommitAsync().Wait();
         }
 

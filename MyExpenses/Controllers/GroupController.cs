@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyExpenses.Helpers;
 using MyExpenses.Models;
 using MyExpenses.Services;
 
@@ -67,9 +68,8 @@ namespace MyExpenses.Controllers
 
         // POST api/group
         [HttpPost]
-        [ProducesResponseType((typeof(GroupManageModel)), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> Post([FromBody] GroupManageModel value)
+        [ProducesResponseType((typeof(GroupAddModel)), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Post([FromBody] GroupAddModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
             if (value != null && !value.Users.Any(u => u.Id.Equals(userId)))

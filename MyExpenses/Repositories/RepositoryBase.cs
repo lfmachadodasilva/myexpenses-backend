@@ -19,7 +19,13 @@ namespace MyExpenses.Repositories
         /// Get all
         /// </summary>
         /// <returns>objects</returns>
-        Task<List<TModel>> GetAll(params Expression<Func<TModel, object>>[] includes);
+        Task<List<TModel>> GetAllAsync(params Expression<Func<TModel, object>>[] includes);
+
+        /// <summary>
+        /// Get all
+        /// </summary>
+        /// <returns>objects</returns>
+        IQueryable<TModel> GetAll(params Expression<Func<TModel, object>>[] includes);
 
         /// <summary>
         /// Check if exist
@@ -77,7 +83,7 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<List<TModel>> GetAll(params Expression<Func<TModel, object>>[] includes)
+        public virtual Task<List<TModel>> GetAllAsync(params Expression<Func<TModel, object>>[] includes)
         {
             //_logger.LogInformation("get all");
 
@@ -88,6 +94,20 @@ namespace MyExpenses.Repositories
             }
 
             return models.ToListAsync();
+        }
+
+        /// <inheritdoc />
+        public virtual IQueryable<TModel> GetAll(params Expression<Func<TModel, object>>[] includes)
+        {
+            //_logger.LogInformation("get all");
+
+            IQueryable<TModel> models = _context.Set<TModel>();
+            foreach (var include in includes)
+            {
+                models = models.Include(include);
+            }
+
+            return models;
         }
 
         /// <inheritdoc />
