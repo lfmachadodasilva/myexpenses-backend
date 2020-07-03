@@ -20,6 +20,7 @@ namespace MyExpenses.UnitTests
             AddLabels();
 
             _controller = ServiceProvider.GetService<LabelController>();
+            MockUser(_controller, DefaultUser);
         }
 
         [Fact]
@@ -36,7 +37,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Label_GetAllWithInvalidUser_ShouldNotReturnData()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var results = await _controller.GetAll(DefaultGroup);
 
@@ -71,7 +72,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Label_GetAllFullWithInvalidUser_ShouldNotReturnData()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var results = await _controller.GetAllFull(DefaultGroup, DefaultMonth, DefaultYear);
 
@@ -114,7 +115,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Label_GetWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var results = await _controller.Get(DefaultLabel);
 
@@ -139,7 +140,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Label_PostWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var model = new LabelAddModel
             {
@@ -202,7 +203,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Label_PutWithInvalidUser_ShouldForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var model = new LabelManageModel
             {
@@ -254,7 +255,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Label_DeleteWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var results = await _controller.Delete(DefaultLabel);
 

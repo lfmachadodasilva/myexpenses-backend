@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -15,7 +17,6 @@ namespace MyExpenses.UnitTests
     public abstract class UnitTestBase
     {
         protected readonly IServiceProvider ServiceProvider;
-        protected readonly Mock<IValidateHelper> ValidateHelperMock;
 
         protected readonly string DefaultUser = "user1";
         protected readonly string DefaultInvalidUser = "invalid";
@@ -29,11 +30,6 @@ namespace MyExpenses.UnitTests
 
         protected UnitTestBase()
         {
-            ValidateHelperMock = new Mock<IValidateHelper>();
-            ValidateHelperMock
-                .Setup(x => x.GetUserId(It.IsAny<ClaimsIdentity>()))
-                .Returns(DefaultUser);
-
             // create a empty configuration file
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.UnitTest.json", optional: true).Build();
 
@@ -43,8 +39,6 @@ namespace MyExpenses.UnitTests
                 .AddTransient<GroupController>()
                 .AddTransient<LabelController>()
                 .AddTransient<UserController>()
-                // replace by mock
-                .AddSingleton<IValidateHelper>(ValidateHelperMock.Object)
                 // automapper
                 .AddAutoMapper(typeof(MyExpensesProfile));
 
@@ -179,11 +173,20 @@ namespace MyExpenses.UnitTests
             unitOfWork.CommitAsync().Wait();
         }
 
-        protected void MockInvalidUser()
+        protected void MockUser(ControllerBase controller, string userId)
         {
-            ValidateHelperMock
-                .Setup(x => x.GetUserId(It.IsAny<ClaimsIdentity>()))
-                .Returns(DefaultInvalidUser);
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(
+                        new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim("user_id", userId)
+                        },
+                        "mock"))
+                }
+            };
         }
     }
 }
