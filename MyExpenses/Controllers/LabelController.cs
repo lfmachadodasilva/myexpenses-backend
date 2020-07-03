@@ -31,7 +31,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(typeof(ICollection<LabelManageModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(long group)
         {
-            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext);
             var results = await _labelService.GetAllAsync(userId, group);
             return Ok(results);
         }
@@ -41,7 +41,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(typeof(ICollection<LabelGetFullModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllFull(long group, int month, int year)
         {
-            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext);
             var results = await _labelService.GetAllFullAsync(userId, group, month, year);
 
             // TODO temporary solution to return the current, last and average value
@@ -64,7 +64,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Get(long id)
         {
-            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext);
 
             try
             {
@@ -87,7 +87,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Post(long group, [FromBody] LabelAddModel value)
         {
-            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext);
 
             try
             {
@@ -113,7 +113,7 @@ namespace MyExpenses.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put([FromBody] LabelManageModel value)
         {
-            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext);
 
             try
             {
@@ -142,7 +142,7 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(long id)
         {
-            var userId = _validateHelper.GetUserId(HttpContext?.User?.Identity as ClaimsIdentity);
+            var userId = _validateHelper.GetUserId(HttpContext);
             try
             {
                 var result = await _labelService.GetByIdAsync(userId, id);
