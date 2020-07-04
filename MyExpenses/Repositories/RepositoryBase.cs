@@ -38,8 +38,9 @@ namespace MyExpenses.Repositories
         /// Get by id
         /// </summary>
         /// <param name="id">id</param>
+        /// <param name="include">doesnt used by base classes</param>
         /// <returns>objects</returns>
-        Task<TModel> GetByIdAsync(TModelType id);
+        Task<TModel> GetByIdAsync(TModelType id, bool include = false);
 
         /// <summary>
         /// Update
@@ -121,7 +122,7 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<TModel> GetByIdAsync(TModelType id)
+        public virtual Task<TModel> GetByIdAsync(TModelType id, bool include = false)
         {
             //_logger.LogInformation($"get by id: {id}");
 
@@ -139,7 +140,7 @@ namespace MyExpenses.Repositories
                 return null;
             }
 
-            var existModel = await GetByIdAsync(model.Id);
+            var existModel = await GetByIdAsync(model.Id, false);
             if (existModel == null)
             {
                 //_logger.LogInformation($"update: {model.Id} does not exists");

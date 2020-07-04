@@ -52,7 +52,7 @@ namespace MyExpenses.Services
 
         public async Task<LabelManageModel> GetByIdAsync(string user, long id)
         {
-            var model = await _repository.GetByIdAsync(id);
+            var model = await _repository.GetByIdAsync(id, true);
             if (model != null && !model.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
             {
                 throw new ForbidException();
@@ -93,7 +93,7 @@ namespace MyExpenses.Services
                 return null;
             }
 
-            var labelModel = await _repository.GetByIdAsync(model.Id);
+            var labelModel = await _repository.GetByIdAsync(model.Id, true);
             if (labelModel == null)
             {
                 throw new KeyNotFoundException(model.Id.ToString());
@@ -104,6 +104,7 @@ namespace MyExpenses.Services
             }
 
             var objToUpdate = _mapper.Map<LabelModel>(model);
+            // objToUpdate.Group = labelModel.Group;
             objToUpdate.GroupId = labelModel.GroupId;
 
             _unitOfWork.BeginTransaction();

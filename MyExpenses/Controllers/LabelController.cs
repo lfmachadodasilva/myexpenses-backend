@@ -81,7 +81,7 @@ namespace MyExpenses.Controllers
             }
         }
 
-        // POST api/label
+        // POST api/label/5
         [HttpPost]
         [ProducesResponseType((typeof(LabelManageModel)), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -109,8 +109,8 @@ namespace MyExpenses.Controllers
             }
         }
 
-        // PUT api/label/5
-        [HttpPut("{id}")]
+        // PUT api/label
+        [HttpPut]
         public async Task<IActionResult> Put([FromBody] LabelManageModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
