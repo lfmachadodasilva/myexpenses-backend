@@ -104,7 +104,6 @@ namespace MyExpenses.Services
             }
 
             var objToUpdate = _mapper.Map<LabelModel>(model);
-            // objToUpdate.Group = labelModel.Group;
             objToUpdate.GroupId = labelModel.GroupId;
 
             _unitOfWork.BeginTransaction();
