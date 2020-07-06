@@ -29,7 +29,8 @@ namespace MyExpenses
                                 "http://localhost:3000",
                                 "https://localhost:3000",
                                 "https://myexpenses-ui-dev.herokuapp.com",
-                                "https://myexpenses-ui.herokuapp.com")
+                                "https://myexpenses-ui.herokuapp.com",
+                                "https://lfmachadodasilva.github.io")
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials();
