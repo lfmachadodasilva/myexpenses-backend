@@ -29,7 +29,6 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(typeof(ICollection<GroupGetModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll()
         {
-            var a = HttpContext;
             var userId = _validateHelper.GetUserId(HttpContext);
             var results = await _groupService.GetAllAsync(userId);
             return Ok(results);

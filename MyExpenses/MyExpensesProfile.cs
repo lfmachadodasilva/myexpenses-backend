@@ -88,6 +88,13 @@ namespace MyExpenses
             CreateMap<LabelGetFullModel, LabelModel>().ReverseMap();
             CreateMap<LabelManageModel, LabelModel>().ReverseMap();
             CreateMap<LabelAddModel, LabelModel>().ReverseMap();
+
+            CreateMap<ExpenseModel, ExpenseModel>()
+                .ForMember(dest => dest.Group, act => act.Ignore())
+                .ForMember(dest => dest.Label, act => act.Ignore());
+            CreateMap<ExpenseFullModel, ExpenseModel>().ReverseMap();
+            CreateMap<ExpenseManageModel, ExpenseModel>().ReverseMap();
+            CreateMap<ExpenseAddModel, ExpenseModel>().ReverseMap();
         }
     }
 }

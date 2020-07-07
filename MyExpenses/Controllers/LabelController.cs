@@ -84,6 +84,7 @@ namespace MyExpenses.Controllers
         [HttpPost]
         [ProducesResponseType((typeof(LabelManageModel)), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Post(long group, [FromBody] LabelAddModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
@@ -110,6 +111,9 @@ namespace MyExpenses.Controllers
 
         // PUT api/label
         [HttpPut]
+        [ProducesResponseType((typeof(LabelManageModel)), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Put([FromBody] LabelManageModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
