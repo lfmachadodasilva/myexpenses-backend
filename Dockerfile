@@ -1,14 +1,14 @@
 ################
 ## Base Image ##
 ################
-FROM images.artifactory.dunnhumby.com/dunnhumby/aspnetcore-runtime:3.1 AS base
-#FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
+#FROM images.artifactory.dunnhumby.com/dunnhumby/aspnetcore-runtime:3.1 AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
 
 #############
 ## Restore ##
 #############
-FROM images.artifactory.dunnhumby.com/dunnhumby/aspnetcore-build:3.1 AS restore
-#FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS restore
+#FROM images.artifactory.dunnhumby.com/dunnhumby/aspnetcore-build:3.1 AS restore
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS restore
 
 WORKDIR /app
 EXPOSE 80
