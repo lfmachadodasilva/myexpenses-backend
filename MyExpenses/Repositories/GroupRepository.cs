@@ -31,7 +31,7 @@ namespace MyExpenses.Repositories
                 .ToListAsync();
         }
 
-        public override Task<GroupModel> GetByIdAsync(long id)
+        public override Task<GroupModel> GetByIdAsync(long id, bool include)
         {
             //_logger.LogInformation("get all");
             return _context.Groups

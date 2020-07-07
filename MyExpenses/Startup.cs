@@ -63,6 +63,10 @@ namespace MyExpenses
 
             services.AddMyExpenses(Configuration);
             services.AddControllers();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6174881b67c0c9ebbcc2f14052b50001dcad973a
             services.AddRouting(options => options.LowercaseUrls = true);
         }
 

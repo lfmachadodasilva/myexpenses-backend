@@ -84,7 +84,7 @@ namespace MyExpenses
             CreateMap<GroupAddModel, GroupModel>().ConvertUsing(new GroupFromAddResolver());
             CreateMap<GroupModel, GroupManageModel>().ConvertUsing(new GroupToManagerResolver());
 
-            CreateMap<LabelModel, LabelModel>().ReverseMap();
+            CreateMap<LabelModel, LabelModel>().ForMember(dest => dest.Group, act => act.Ignore());
             CreateMap<LabelGetFullModel, LabelModel>().ReverseMap();
             CreateMap<LabelManageModel, LabelModel>().ReverseMap();
             CreateMap<LabelAddModel, LabelModel>().ReverseMap();

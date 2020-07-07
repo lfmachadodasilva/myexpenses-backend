@@ -31,14 +31,19 @@ namespace MyExpenses.Repositories
                 .ToListAsync();
         }
 
-        public override Task<LabelModel> GetByIdAsync(long id)
+        public override Task<LabelModel> GetByIdAsync(long id, bool include)
         {
-            //_logger.LogInformation("get all");
-            return _context.Labels
-                .Include(l => l.Group)
-                    .ThenInclude(g => g.GroupUser)
-                        .ThenInclude(gu => gu.User)
-                .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (include)
+            {
+                //_logger.LogInformation("get all");
+                return _context.Labels
+                    .Include(l => l.Group)
+                        .ThenInclude(g => g.GroupUser)
+                            .ThenInclude(gu => gu.User)
+                    .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            }
+
+            return base.GetByIdAsync(id);
         }
     }
     // public class LabelRepository : ILabelRepository
