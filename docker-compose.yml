@@ -1,12 +1,28 @@
 version: "3"
 
 services:
-    myexpense-backend:
+    api:
         build: .
         ports:
-            - 5000:80
-    mydb:
-        image: images.artifactory.dunnhumby.com/postgres:latest
-        #image: postgres:latest
+            - 5000:5000
+        depends_on:
+            - db
+        environment:
+            - ASPNETCORE_URLS=http://+:5000
+        networks:
+            - my-network
+    db:
+        #image: images.artifactory.dunnhumby.com/postgres:12
+        image: postgres:12
+        environment:
+            POSTGRES_DB: myexpenses
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
         ports:
-            - 5432:5432
+            - 5433:5432
+        networks:
+            - my-network
+
+networks:
+    my-network:
+        driver: bridge

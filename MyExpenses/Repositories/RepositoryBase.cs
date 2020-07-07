@@ -19,7 +19,13 @@ namespace MyExpenses.Repositories
         /// Get all
         /// </summary>
         /// <returns>objects</returns>
-        Task<List<TModel>> GetAll(params Expression<Func<TModel, object>>[] includes);
+        Task<List<TModel>> GetAllAsync(params Expression<Func<TModel, object>>[] includes);
+
+        /// <summary>
+        /// Get all
+        /// </summary>
+        /// <returns>objects</returns>
+        IQueryable<TModel> GetAll(params Expression<Func<TModel, object>>[] includes);
 
         /// <summary>
         /// Check if exist
@@ -32,8 +38,9 @@ namespace MyExpenses.Repositories
         /// Get by id
         /// </summary>
         /// <param name="id">id</param>
+        /// <param name="include">doesnt used by base classes</param>
         /// <returns>objects</returns>
-        Task<TModel> GetByIdAsync(TModelType id);
+        Task<TModel> GetByIdAsync(TModelType id, bool include = false);
 
         /// <summary>
         /// Update
@@ -77,7 +84,7 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<List<TModel>> GetAll(params Expression<Func<TModel, object>>[] includes)
+        public virtual Task<List<TModel>> GetAllAsync(params Expression<Func<TModel, object>>[] includes)
         {
             //_logger.LogInformation("get all");
 
@@ -91,6 +98,20 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
+        public virtual IQueryable<TModel> GetAll(params Expression<Func<TModel, object>>[] includes)
+        {
+            //_logger.LogInformation("get all");
+
+            IQueryable<TModel> models = _context.Set<TModel>();
+            foreach (var include in includes)
+            {
+                models = models.Include(include);
+            }
+
+            return models;
+        }
+
+        /// <inheritdoc />
         public virtual Task<bool> ExistAsync(TModelType id)
         {
             //_logger.LogInformation($"get by id: {id}");
@@ -101,7 +122,7 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<TModel> GetByIdAsync(TModelType id)
+        public virtual Task<TModel> GetByIdAsync(TModelType id, bool include = false)
         {
             //_logger.LogInformation($"get by id: {id}");
 
@@ -119,7 +140,7 @@ namespace MyExpenses.Repositories
                 return null;
             }
 
-            var existModel = await GetByIdAsync(model.Id);
+            var existModel = await GetByIdAsync(model.Id, false);
             if (existModel == null)
             {
                 //_logger.LogInformation($"update: {model.Id} does not exists");

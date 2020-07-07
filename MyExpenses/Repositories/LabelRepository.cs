@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repositories
@@ -9,9 +14,36 @@ namespace MyExpenses.Repositories
 
     public class LabelRepository : RepositoryBase<LabelModel, long>, ILabelRepository
     {
+        private readonly MyExpensesContext _context;
+
         public LabelRepository(MyExpensesContext context, IMapper mapper) :
             base(context, mapper)
         {
+            _context = context;
+        }
+
+        public override Task<List<LabelModel>> GetAllAsync(params Expression<Func<LabelModel, object>>[] includes)
+        {
+            //_logger.LogInformation("get all");
+            return _context.Labels
+                .Include(l => l.Group)
+                    .ThenInclude(g => g.GroupUser)
+                .ToListAsync();
+        }
+
+        public override Task<LabelModel> GetByIdAsync(long id, bool include)
+        {
+            if (include)
+            {
+                //_logger.LogInformation("get all");
+                return _context.Labels
+                    .Include(l => l.Group)
+                        .ThenInclude(g => g.GroupUser)
+                            .ThenInclude(gu => gu.User)
+                    .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            }
+
+            return base.GetByIdAsync(id);
         }
     }
     // public class LabelRepository : ILabelRepository

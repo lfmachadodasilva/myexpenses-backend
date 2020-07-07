@@ -37,6 +37,24 @@ namespace MyExpenses
                 };
     }
 
+    public class GroupFromAddResolver : ITypeConverter<GroupAddModel, GroupModel>
+    {
+        public GroupModel Convert(
+            GroupAddModel source,
+            GroupModel destination,
+            ResolutionContext context) =>
+                new GroupModel
+                {
+                    Name = source.Name,
+                    GroupUser = source.Users
+                        .Select(u => new GroupUserModel
+                        {
+                            GroupId = 0,
+                            UserId = u.Id
+                        }).ToList()
+                };
+    }
+
     public class GroupToManagerResolver : ITypeConverter<GroupModel, GroupManageModel>
     {
         public GroupManageModel Convert(
@@ -63,7 +81,13 @@ namespace MyExpenses
             CreateMap<GroupGetModel, GroupModel>().ReverseMap();
             CreateMap<GroupModel, GroupGetFullModel>().ConvertUsing(new GroupToFullResolver());
             CreateMap<GroupManageModel, GroupModel>().ConvertUsing(new GroupFromManagerResolver());
+            CreateMap<GroupAddModel, GroupModel>().ConvertUsing(new GroupFromAddResolver());
             CreateMap<GroupModel, GroupManageModel>().ConvertUsing(new GroupToManagerResolver());
+
+            CreateMap<LabelModel, LabelModel>().ForMember(dest => dest.Group, act => act.Ignore());
+            CreateMap<LabelGetFullModel, LabelModel>().ReverseMap();
+            CreateMap<LabelManageModel, LabelModel>().ReverseMap();
+            CreateMap<LabelAddModel, LabelModel>().ReverseMap();
         }
     }
 }

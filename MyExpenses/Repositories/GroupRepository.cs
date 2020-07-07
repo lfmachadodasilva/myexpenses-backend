@@ -22,7 +22,7 @@ namespace MyExpenses.Repositories
             _context = context;
         }
 
-        public override Task<List<GroupModel>> GetAll(params Expression<Func<GroupModel, object>>[] includes)
+        public override Task<List<GroupModel>> GetAllAsync(params Expression<Func<GroupModel, object>>[] includes)
         {
             //_logger.LogInformation("get all");
             return _context.Groups
@@ -31,7 +31,7 @@ namespace MyExpenses.Repositories
                 .ToListAsync();
         }
 
-        public override Task<GroupModel> GetByIdAsync(long id)
+        public override Task<GroupModel> GetByIdAsync(long id, bool include)
         {
             //_logger.LogInformation("get all");
             return _context.Groups

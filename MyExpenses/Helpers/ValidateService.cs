@@ -1,24 +1,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
-namespace MyExpenses.Services
+namespace MyExpenses.Helpers
 {
     public interface IValidateHelper
     {
         /// <summary>
         /// Get user id from token/claims
         /// </summary>
-        /// <param name="identity">Claims identity</param>
+        /// <param name="httpContext">Context</param>
         /// <returns></returns>
-        string GetUserId(ClaimsIdentity identity);
+        string GetUserId(HttpContext httpContext);
     }
 
     public class ValidateHelper : IValidateHelper
     {
         /// <inheritdoc>
-        public string GetUserId(ClaimsIdentity identity)
+        public string GetUserId(HttpContext httpContext)
         {
+            var identity = httpContext?.User?.Identity as ClaimsIdentity;
+
             if (identity == null)
             {
                 return null;

@@ -19,4 +19,25 @@ namespace MyExpenses.Models
 
         #endregion
     }
+
+    public class LabelAddModel
+    {
+        [Required]
+        public string Name { get; set; }
+    }
+
+    public class LabelManageModel : ModelBaseNumber
+    {
+        [Required]
+        public string Name { get; set; }
+    }
+
+    public class LabelGetFullModel : LabelManageModel
+    {
+        public decimal CurrValue { get; set; }
+
+        public decimal LastValue { get; set; }
+
+        public decimal AvgValue { get; set; }
+    }
 }

@@ -5,25 +5,27 @@ using MyExpenses.Controllers;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using MyExpenses.Models;
-using System.Security.Claims;
-using Moq;
 using System.Threading.Tasks;
 
 namespace MyExpenses.UnitTests
 {
     public class GroupUnitTests : UnitTestBase
     {
+        private GroupController _controller;
+
         public GroupUnitTests()
         {
             AddUsers();
             AddGroups();
+
+            _controller = ServiceProvider.GetService<GroupController>();
+            MockUser(_controller, DefaultUser);
         }
 
         [Fact]
         public async Task Group_GetAll_ShouldReturnData()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.GetAll();
+            var results = await _controller.GetAll();
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -34,10 +36,9 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_GetAllWithInvalidUser_ShouldNotReturnData()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.GetAll();
+            var results = await _controller.GetAll();
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -48,8 +49,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_GetAllFull_ShouldReturnData()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.GetAllFull();
+            var results = await _controller.GetAllFull();
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -60,10 +60,9 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_GetAllFullWithInvalidUser_ShouldNotReturnData()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.GetAllFull();
+            var results = await _controller.GetAllFull();
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -74,8 +73,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_Get_ShouldReturnData()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Get(DefaultGroup);
+            var results = await _controller.Get(DefaultGroup);
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -86,10 +84,9 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_GetWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Get(DefaultGroup);
+            var results = await _controller.Get(DefaultGroup);
 
             results.Should().BeOfType<ForbidResult>();
         }
@@ -97,8 +94,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_GetWithInvalidGroup_ShouldReturnNotFound()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Get(DefaultInvalidGroup);
+            var results = await _controller.Get(DefaultInvalidGroup);
 
             results.Should().BeOfType<NotFoundResult>();
         }
@@ -106,13 +102,12 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_Post_ShouldReturnData()
         {
-            var model = new GroupManageModel
+            var model = new GroupAddModel
             {
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Post(model);
+            var results = await _controller.Post(model);
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -123,15 +118,14 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_PostWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
-            var model = new GroupManageModel
+            var model = new GroupAddModel
             {
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Post(model);
+            var results = await _controller.Post(model);
 
             results.Should().BeOfType<ForbidResult>();
         }
@@ -139,13 +133,12 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_PostWithInvalidUser2_ShouldReturnForbid()
         {
-            var model = new GroupManageModel
+            var model = new GroupAddModel
             {
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultInvalidUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Post(model);
+            var results = await _controller.Post(model);
 
             results.Should().BeOfType<ForbidResult>();
         }
@@ -153,8 +146,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_PostWithInvalidGroup_ShouldReturnBadRequest()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Post(null);
+            var results = await _controller.Post(null);
 
             results.Should().BeOfType<BadRequestResult>();
         }
@@ -168,8 +160,7 @@ namespace MyExpenses.UnitTests
                 Name = "New name",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Put(model);
+            var results = await _controller.Put(model);
 
             results
                 .Should().BeOfType<OkObjectResult>()
@@ -180,7 +171,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_PutWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
             var model = new GroupManageModel
             {
@@ -188,8 +179,7 @@ namespace MyExpenses.UnitTests
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Put(model);
+            var results = await _controller.Put(model);
 
             results.Should().BeOfType<ForbidResult>();
         }
@@ -203,8 +193,7 @@ namespace MyExpenses.UnitTests
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultInvalidUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Put(model);
+            var results = await _controller.Put(model);
 
             results.Should().BeOfType<ForbidResult>();
         }
@@ -218,8 +207,7 @@ namespace MyExpenses.UnitTests
                 Name = "New user",
                 Users = new List<UserModelBase>() { new UserModelBase { Id = DefaultUser } }
             };
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Put(model);
+            var results = await _controller.Put(model);
 
             results.Should().BeOfType<NotFoundResult>();
         }
@@ -227,8 +215,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_PutWithInvalidGroup_ShouldReturnBadRequest()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Put(null);
+            var results = await _controller.Put(null);
 
             results.Should().BeOfType<BadRequestResult>();
         }
@@ -236,8 +223,7 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_Delete_ShouldReturnData()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Delete(DefaultGroup);
+            var results = await _controller.Delete(DefaultGroup);
 
             results.Should().BeOfType<OkResult>();
         }
@@ -245,19 +231,17 @@ namespace MyExpenses.UnitTests
         [Fact]
         public async Task Group_DeleteWithInvalidGroup_ShouldReturnNotFound()
         {
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Delete(DefaultInvalidGroup);
+            var results = await _controller.Delete(DefaultInvalidGroup);
 
             results.Should().BeOfType<NotFoundResult>();
         }
 
         [Fact]
-        public async Task Group_DeleteWithInvalidUser_ShouldReturnNotFound()
+        public async Task Group_DeleteWithInvalidUser_ShouldReturnForbid()
         {
-            MockInvalidUser();
+            MockUser(_controller, DefaultInvalidUser);
 
-            var controller = ServiceProvider.GetService<GroupController>();
-            var results = await controller.Delete(DefaultGroup);
+            var results = await _controller.Delete(DefaultGroup);
 
             results.Should().BeOfType<ForbidResult>();
         }

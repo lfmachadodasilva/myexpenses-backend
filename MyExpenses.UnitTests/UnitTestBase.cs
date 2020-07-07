@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MyExpenses.Controllers;
+using MyExpenses.Helpers;
 using MyExpenses.Models;
 using MyExpenses.Services;
 
@@ -14,20 +17,19 @@ namespace MyExpenses.UnitTests
     public abstract class UnitTestBase
     {
         protected readonly IServiceProvider ServiceProvider;
-        protected readonly Mock<IValidateHelper> ValidateHelperMock;
 
         protected readonly string DefaultUser = "user1";
         protected readonly string DefaultInvalidUser = "invalid";
         protected readonly long DefaultGroup = 1;
         protected readonly long DefaultInvalidGroup = 100;
+        protected readonly long DefaultLabel = 1;
+        protected readonly long DefaultLabelOtherGroup = 4;
+        protected readonly long DefaultInvalidLabel = 100;
+        protected readonly int DefaultMonth = 1;
+        protected readonly int DefaultYear = 2020;
 
         protected UnitTestBase()
         {
-            ValidateHelperMock = new Mock<IValidateHelper>();
-            ValidateHelperMock
-                .Setup(x => x.GetUserId(It.IsAny<ClaimsIdentity>()))
-                .Returns(DefaultUser);
-
             // create a empty configuration file
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.UnitTest.json", optional: true).Build();
 
@@ -35,9 +37,8 @@ namespace MyExpenses.UnitTests
                 .AddMyExpenses(config)
                 // add controllers
                 .AddTransient<GroupController>()
+                .AddTransient<LabelController>()
                 .AddTransient<UserController>()
-                // replace by mock
-                .AddSingleton<IValidateHelper>(ValidateHelperMock.Object)
                 // automapper
                 .AddAutoMapper(typeof(MyExpensesProfile));
 
@@ -123,11 +124,69 @@ namespace MyExpenses.UnitTests
             unitOfWork.CommitAsync().Wait();
         }
 
-        protected void MockInvalidUser()
+        protected void AddLabels()
         {
-            ValidateHelperMock
-                .Setup(x => x.GetUserId(It.IsAny<ClaimsIdentity>()))
-                .Returns(DefaultInvalidUser);
+            var context = ServiceProvider.GetService<MyExpensesContext>();
+            var unitOfWork = ServiceProvider.GetService<IUnitOfWork>();
+
+            unitOfWork.BeginTransaction();
+
+            context.Add(new LabelModel
+            {
+                Id = 1,
+                Name = "Label 1",
+                GroupId = DefaultGroup
+            });
+            context.Add(new LabelModel
+            {
+                Id = 2,
+                Name = "Label 2",
+                GroupId = DefaultGroup
+            });
+            context.Add(new LabelModel
+            {
+                Id = 3,
+                Name = "Label 3",
+                GroupId = DefaultGroup
+            });
+
+            context.Add(new LabelModel
+            {
+                Id = 4,
+                Name = "Label 4",
+                GroupId = 2
+            });
+            context.Add(new LabelModel
+            {
+                Id = 5,
+                Name = "Label 5",
+                GroupId = 2
+            });
+
+            context.Add(new LabelModel
+            {
+                Id = 6,
+                Name = "Label 6",
+                GroupId = 3
+            });
+
+            unitOfWork.CommitAsync().Wait();
+        }
+
+        protected void MockUser(ControllerBase controller, string userId)
+        {
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(
+                        new ClaimsIdentity(new Claim[]
+                        {
+                            new Claim("user_id", userId)
+                        },
+                        "mock"))
+                }
+            };
         }
     }
 }
