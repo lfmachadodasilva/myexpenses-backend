@@ -21,7 +21,12 @@ namespace MyExpenses
         {
             services.AddCors(setup => setup.AddPolicy("AllowAll", options =>
             {
-                options.AllowAnyOrigin()
+                options.WithOrigins(
+                            "http://localhost:3000",
+                            "https://localhost:3000",
+                            "https://myexpenses-ui-dev.herokuapp.com",
+                            "https://myexpenses-ui.herokuapp.com",
+                            "https://lfmachadodasilva.github.io")
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
