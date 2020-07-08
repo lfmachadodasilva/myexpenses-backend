@@ -19,17 +19,22 @@ namespace MyExpenses
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(setup => setup.AddPolicy("AllowAll", options =>
+            services.AddCors(options =>
             {
-                options.WithOrigins(
-                            "http://localhost:3000",
-                            "https://localhost:3000",
-                            "https://myexpenses-ui-dev.herokuapp.com",
-                            "https://myexpenses-ui.herokuapp.com",
-                            "https://lfmachadodasilva.github.io")
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            }));
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins(
+                                "http://localhost:3000",
+                                "https://localhost:3000",
+                                "https://myexpenses-ui-dev.herokuapp.com",
+                                "https://myexpenses-ui.herokuapp.com")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    });
+            });
 
             var buildVersion = Configuration.GetSection("AppConfig:BuildVersion").Value;
 
