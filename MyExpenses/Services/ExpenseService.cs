@@ -60,7 +60,17 @@ namespace MyExpenses.Services
             var results = models
                 .Where(x =>
                     x.GroupId.Equals(group) && x.Group.GroupUser.Any(gu => gu.UserId.Equals(user) &&
-                    x.Date >= firstDay && x.Date <= lastDay))
+                    DateTime.Compare(x.Date, firstDay) > 0 && DateTime.Compare(x.Date, lastDay) < 0))
+                .OrderBy(x => x.Date).ThenBy(x => x.Name);
+            var results2 = models
+                .Where(x =>
+                    x.GroupId.Equals(group) && x.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
+                .Where(x =>
+                {
+                    var a = DateTime.Compare(x.Date, firstDay);
+                    var b = DateTime.Compare(x.Date, lastDay);
+                    return a > 0 && b < 0;
+                })
                 .OrderBy(x => x.Date).ThenBy(x => x.Name);
 
             return _mapper.Map<ICollection<ExpenseFullModel>>(results);
