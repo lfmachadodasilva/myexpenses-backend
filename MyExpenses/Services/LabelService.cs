@@ -35,19 +35,23 @@ namespace MyExpenses.Services
         public async Task<ICollection<LabelManageModel>> GetAllAsync(string user, long group)
         {
             var models = await _repository.GetAllAsync(x => x.Group);
-            var modelsFiltered = models.Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)));
+            var results = models
+                .Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
+                .OrderBy(x => x.Name);
 
-            return _mapper.Map<ICollection<LabelManageModel>>(modelsFiltered);
+            return _mapper.Map<ICollection<LabelManageModel>>(results);
         }
 
         public async Task<ICollection<LabelGetFullModel>> GetAllFullAsync(string user, long group, int month, int year)
         {
             var models = await _repository.GetAllAsync(x => x.Group);
-            var modelsFiltered = models.Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)));
+            var results = models
+                .Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
+                .OrderBy(x => x.Name);
 
             // TODO join with labels to return current, last and average value 
 
-            return _mapper.Map<ICollection<LabelGetFullModel>>(modelsFiltered);
+            return _mapper.Map<ICollection<LabelGetFullModel>>(results);
         }
 
         public async Task<LabelManageModel> GetByIdAsync(string user, long id)

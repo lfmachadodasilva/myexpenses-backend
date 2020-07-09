@@ -33,17 +33,21 @@ namespace MyExpenses.Services
         public async Task<ICollection<GroupGetModel>> GetAllAsync(string userId)
         {
             var models = await _repository.GetAllAsync();
-            var modelsFiltered = models.Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)));
+            var results = models
+                .Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)))
+                .OrderBy(g => g.Name);
 
-            return _mapper.Map<ICollection<GroupGetModel>>(modelsFiltered);
+            return _mapper.Map<ICollection<GroupGetModel>>(results);
         }
 
         public async Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string userId)
         {
             var models = await _repository.GetAllAsync();
-            var modelsFiltered = models.Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)));
+            var results = models
+                .Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)))
+                .OrderBy(g => g.Name);
 
-            return _mapper.Map<ICollection<GroupGetFullModel>>(modelsFiltered);
+            return _mapper.Map<ICollection<GroupGetFullModel>>(results);
         }
 
         public async Task<GroupGetFullModel> GetByIdAsync(long id)

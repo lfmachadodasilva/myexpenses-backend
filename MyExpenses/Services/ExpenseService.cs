@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -43,17 +44,26 @@ namespace MyExpenses.Services
         public async Task<ICollection<ExpenseManageModel>> GetAllAsync(string user, long group)
         {
             var models = await _repository.GetAllAsync();
-            var modelsFiltered = models.Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)));
+            var results = models
+                .Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
+                .OrderBy(x => x.Date).ThenBy(x => x.Name);
 
-            return _mapper.Map<ICollection<ExpenseManageModel>>(modelsFiltered);
+            return _mapper.Map<ICollection<ExpenseManageModel>>(results);
         }
 
         public async Task<ICollection<ExpenseFullModel>> GetAllFullAsync(string user, long group, int month, int year)
         {
-            var models = await _repository.GetAllAsync();
-            var modelsFiltered = models.Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)));
+            var firstDay = new DateTime(year, month, 1);
+            var lastDay = firstDay.AddMonths(1).AddDays(-1);
 
-            return _mapper.Map<ICollection<ExpenseFullModel>>(modelsFiltered);
+            var models = await _repository.GetAllAsync();
+            var results = models
+                .Where(x =>
+                    x.GroupId.Equals(group) && x.Group.GroupUser.Any(gu => gu.UserId.Equals(user) &&
+                    x.Date >= firstDay && x.Date <= lastDay))
+                .OrderBy(x => x.Date).ThenBy(x => x.Name);
+
+            return _mapper.Map<ICollection<ExpenseFullModel>>(results);
         }
 
         public async Task<ExpenseManageModel> GetByIdAsync(string user, long id)
