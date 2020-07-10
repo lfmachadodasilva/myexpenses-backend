@@ -17,6 +17,8 @@ namespace MyExpenses.Services
         Task<ExpenseManageModel> AddAsync(string user, ExpenseAddModel model);
         Task<ExpenseManageModel> UpdateAsync(string user, ExpenseManageModel model);
         Task<bool> DeleteAsync(long id);
+
+        // Task<ICollection<LabelValueModel>> GetValuesByLabel(string user, long group, DateTime start, DateTime end);
     }
 
     public class ExpenseService : IExpenseService
@@ -61,16 +63,6 @@ namespace MyExpenses.Services
                 .Where(x =>
                     x.GroupId.Equals(group) && x.Group.GroupUser.Any(gu => gu.UserId.Equals(user) &&
                     DateTime.Compare(x.Date, firstDay) > 0 && DateTime.Compare(x.Date, lastDay) < 0))
-                .OrderBy(x => x.Date).ThenBy(x => x.Name);
-            var results2 = models
-                .Where(x =>
-                    x.GroupId.Equals(group) && x.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
-                .Where(x =>
-                {
-                    var a = DateTime.Compare(x.Date, firstDay);
-                    var b = DateTime.Compare(x.Date, lastDay);
-                    return a > 0 && b < 0;
-                })
                 .OrderBy(x => x.Date).ThenBy(x => x.Name);
 
             return _mapper.Map<ICollection<ExpenseFullModel>>(results);

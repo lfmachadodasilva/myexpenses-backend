@@ -173,6 +173,56 @@ namespace MyExpenses.UnitTests
             unitOfWork.CommitAsync().Wait();
         }
 
+        protected void AddExpenses()
+        {
+            var context = ServiceProvider.GetService<MyExpensesContext>();
+            var unitOfWork = ServiceProvider.GetService<IUnitOfWork>();
+
+            unitOfWork.BeginTransaction();
+
+            context.Add(new ExpenseModel
+            {
+                Id = 1,
+                Name = "Expense 1",
+                GroupId = DefaultGroup,
+                LabelId = DefaultLabel,
+                Value = 1,
+                Type = ExpenseType.Outcoming,
+                Date = DateTime.Today
+            });
+            context.Add(new ExpenseModel
+            {
+                Id = 2,
+                Name = "Expense 2",
+                GroupId = DefaultGroup,
+                LabelId = DefaultLabel,
+                Value = 2,
+                Type = ExpenseType.Incoming,
+                Date = DateTime.Today
+            });
+            context.Add(new ExpenseModel
+            {
+                Id = 1,
+                Name = "Expense 1",
+                GroupId = DefaultGroup,
+                LabelId = DefaultLabel,
+                Value = 1,
+                Type = ExpenseType.Outcoming,
+                Date = DateTime.Today.AddMonths(-1)
+            });
+            context.Add(new ExpenseModel
+            {
+                Id = 2,
+                Name = "Expense 2",
+                GroupId = DefaultGroup,
+                LabelId = DefaultLabel,
+                Value = 2,
+                Type = ExpenseType.Incoming,
+                Date = DateTime.Today.AddMonths(-1)
+            });
+            unitOfWork.CommitAsync().Wait();
+        }
+
         protected void MockUser(ControllerBase controller, string userId)
         {
             controller.ControllerContext = new ControllerContext

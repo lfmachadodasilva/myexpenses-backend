@@ -25,7 +25,7 @@ namespace MyExpenses.Repositories
         /// Get all
         /// </summary>
         /// <returns>objects</returns>
-        IQueryable<TModel> GetAll(params Expression<Func<TModel, object>>[] includes);
+        IQueryable<TModel> GetAll();
 
         /// <summary>
         /// Check if exist
@@ -98,16 +98,11 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IQueryable<TModel> GetAll(params Expression<Func<TModel, object>>[] includes)
+        public virtual IQueryable<TModel> GetAll()
         {
             //_logger.LogInformation("get all");
 
             IQueryable<TModel> models = _context.Set<TModel>();
-            foreach (var include in includes)
-            {
-                models = models.Include(include);
-            }
-
             return models;
         }
 
