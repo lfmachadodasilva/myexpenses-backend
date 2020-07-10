@@ -134,10 +134,11 @@ namespace MyExpenses.Services
                     AvgValue = l.Expenses
                         .Where(e =>
                             DateTime.Compare(e.Date, averageStart) > 0 &&
-                            DateTime.Compare(e.Date, averageEnd) < 0)
-                        .Select(x => x.Value)
-                        .DefaultIfEmpty(0M)
-                        .Average()
+                            DateTime.Compare(e.Date, averageEnd) < 0).Any() ?
+                        l.Expenses
+                        .Where(e =>
+                            DateTime.Compare(e.Date, averageStart) > 0 &&
+                            DateTime.Compare(e.Date, averageEnd) < 0).Average(e => e.Value) : 0
                 });
             return models.ToList();
         }

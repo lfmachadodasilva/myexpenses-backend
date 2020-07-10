@@ -58,40 +58,40 @@ namespace MyExpenses.UnitTests
                 .Which.Should().BeEmpty();
         }
 
-        // [Fact]
-        // public async Task Label_GetAllFull_ShouldReturnData()
-        // {
-        //     var results = await _controller.GetAllFull(DefaultGroup, DefaultMonth, DefaultYear);
+        [Fact]
+        public async Task Label_GetAllFull_ShouldReturnData()
+        {
+            var results = await _controller.GetAllFull(DefaultGroup, DefaultMonth, DefaultYear);
 
-        //     results
-        //         .Should().BeOfType<OkObjectResult>()
-        //         .Which.Value.Should().BeAssignableTo<ICollection<LabelGetFullModel>>()
-        //         .Which.Should().NotBeEmpty();
-        // }
+            results
+                .Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().BeAssignableTo<ICollection<LabelGetFullModel>>()
+                .Which.Should().NotBeEmpty();
+        }
 
-        // [Fact]
-        // public async Task Label_GetAllFullWithInvalidUser_ShouldNotReturnData()
-        // {
-        //     MockUser(_controller, DefaultInvalidUser);
+        [Fact]
+        public async Task Label_GetAllFullWithInvalidUser_ShouldNotReturnData()
+        {
+            MockUser(_controller, DefaultInvalidUser);
 
-        //     var results = await _controller.GetAllFull(DefaultGroup, DefaultMonth, DefaultYear);
+            var results = await _controller.GetAllFull(DefaultGroup, DefaultMonth, DefaultYear);
 
-        //     results
-        //         .Should().BeOfType<OkObjectResult>()
-        //         .Which.Value.Should().BeAssignableTo<ICollection<LabelGetFullModel>>()
-        //         .Which.Should().BeEmpty();
-        // }
+            results
+                .Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().BeAssignableTo<ICollection<LabelGetFullModel>>()
+                .Which.Should().BeEmpty();
+        }
 
-        // [Fact]
-        // public async Task Label_GetAllFullWithInvalidGroup_ShouldNotReturnData()
-        // {
-        //     var results = await _controller.GetAllFull(DefaultInvalidGroup, DefaultMonth, DefaultYear);
+        [Fact]
+        public async Task Label_GetAllFullWithInvalidGroup_ShouldNotReturnData()
+        {
+            var results = await _controller.GetAllFull(DefaultInvalidGroup, DefaultMonth, DefaultYear);
 
-        //     results
-        //         .Should().BeOfType<OkObjectResult>()
-        //         .Which.Value.Should().BeAssignableTo<ICollection<LabelGetFullModel>>()
-        //         .Which.Should().BeEmpty();
-        // }
+            results
+                .Should().BeOfType<OkObjectResult>()
+                .Which.Value.Should().BeAssignableTo<ICollection<LabelGetFullModel>>()
+                .Which.Should().BeEmpty();
+        }
 
         [Fact]
         public async Task Label_Get_ShouldReturnData()
