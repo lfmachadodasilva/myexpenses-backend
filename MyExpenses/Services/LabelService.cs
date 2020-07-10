@@ -135,10 +135,16 @@ namespace MyExpenses.Services
                         .Where(e =>
                             DateTime.Compare(e.Date, averageStart) > 0 &&
                             DateTime.Compare(e.Date, averageEnd) < 0).Any() ?
-                        l.Expenses
-                        .Where(e =>
-                            DateTime.Compare(e.Date, averageStart) > 0 &&
-                            DateTime.Compare(e.Date, averageEnd) < 0).Average(e => e.Value) : 0
+                                l.Expenses
+                                    .Where(e =>
+                                        DateTime.Compare(e.Date, averageStart) > 0 &&
+                                        DateTime.Compare(e.Date, averageEnd) < 0)
+                                    .GroupBy(
+                                        key => new { key.Date.Month, key.Date.Year },
+                                        value => value.Value,
+                                        (key, values) => values.Sum())
+                                    .Average() :
+                                0
                 });
             return models.ToList();
         }
