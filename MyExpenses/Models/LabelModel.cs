@@ -17,7 +17,19 @@ namespace MyExpenses.Models
         [ForeignKey(ModelConstants.ForeignKeyGroup)]
         public GroupModel Group { get; set; }
 
+        public ICollection<ExpenseModel> Expenses { get; set; }
+
         #endregion
+
+        public LabelModel()
+        {
+            Expenses = new List<ExpenseModel>();
+        }
+    }
+
+    public class LabelValueModel : ModelBaseNumber
+    {
+        public decimal Value { get; set; }
     }
 
     public class LabelAddModel

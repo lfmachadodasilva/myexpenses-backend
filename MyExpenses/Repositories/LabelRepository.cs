@@ -10,6 +10,7 @@ namespace MyExpenses.Repositories
 {
     public interface ILabelRepository : IRepository<LabelModel, long>
     {
+        Task<List<LabelModel>> GetAllWithIncludeAsync();
     }
 
     public class LabelRepository : RepositoryBase<LabelModel, long>, ILabelRepository
@@ -28,6 +29,16 @@ namespace MyExpenses.Repositories
             return _context.Labels
                 .Include(l => l.Group)
                     .ThenInclude(g => g.GroupUser)
+                .ToListAsync();
+        }
+
+        public Task<List<LabelModel>> GetAllWithIncludeAsync()
+        {
+            //_logger.LogInformation("get all");
+            return _context.Labels
+                .Include(l => l.Group)
+                    .ThenInclude(g => g.GroupUser)
+                .Include(l => l.Expenses)
                 .ToListAsync();
         }
 

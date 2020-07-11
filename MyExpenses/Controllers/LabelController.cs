@@ -41,18 +41,19 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> GetAllFull(long group, int month, int year)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
-            var results = await _labelService.GetAllFullAsync(userId, group, month, year);
+            // var results = await _labelService.GetAllFullAsync(userId, group, month, year);
+            var results = _labelService.GetAllFull(userId, group, month, year);
 
             // TODO temporary solution to return the current, last and average value
-            Random random = new Random();
-            results = results.Select(x => new LabelGetFullModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                CurrValue = random.Next(-200, 200),
-                LastValue = random.Next(-200, 200),
-                AvgValue = random.Next(-200, 200)
-            }).ToList();
+            // Random random = new Random();
+            // results = results.Select(x => new LabelGetFullModel
+            // {
+            //     Id = x.Id,
+            //     Name = x.Name,
+            //     CurrValue = random.Next(-200, 200),
+            //     LastValue = random.Next(-200, 200),
+            //     AvgValue = random.Next(-200, 200)
+            // }).ToList();
 
             return Ok(results);
         }
@@ -84,6 +85,7 @@ namespace MyExpenses.Controllers
         [HttpPost]
         [ProducesResponseType((typeof(LabelManageModel)), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Post(long group, [FromBody] LabelAddModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
@@ -110,6 +112,9 @@ namespace MyExpenses.Controllers
 
         // PUT api/label
         [HttpPut]
+        [ProducesResponseType((typeof(LabelManageModel)), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Put([FromBody] LabelManageModel value)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
