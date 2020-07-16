@@ -15,6 +15,7 @@ namespace MyExpenses.Services
         Task<ICollection<ExpenseFullModel>> GetAllFullAsync(string user, long group, int month, int year);
         Task<ExpenseManageModel> GetByIdAsync(string user, long id);
         Task<ExpenseManageModel> AddAsync(string user, ExpenseAddModel model);
+        Task<ICollection<ExpenseManageModel>> AddAsync(string user, long group, ICollection<ExpenseAddModel> models);
         Task<ExpenseManageModel> UpdateAsync(string user, ExpenseManageModel model);
         Task<bool> DeleteAsync(long id);
 
@@ -99,6 +100,32 @@ namespace MyExpenses.Services
             var objAdded = await _repository.AddAsync(objToAdd);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<ExpenseManageModel>(objAdded) : null;
+        }
+
+        public async Task<ICollection<ExpenseManageModel>> AddAsync(string user, long group, ICollection<ExpenseAddModel> models)
+        {
+            var groupModel = await _groupService.GetByIdAsync(group);
+            if (groupModel == null)
+            {
+                throw new KeyNotFoundException(group.ToString());
+            }
+            if (!groupModel.Users.Any(u => u.Id.Equals(user)))
+            {
+                throw new ForbidException();
+            }
+
+            _unitOfWork.BeginTransaction();
+            var resultModels = models.Select(async model =>
+            {
+                var objToAdd = _mapper.Map<ExpenseModel>(model);
+                objToAdd.GroupId = group;
+
+                var objAdded = await _repository.AddAsync(objToAdd);
+                return _mapper.Map<ExpenseManageModel>(objAdded);
+            }).ToArray();
+            var returnResults = await Task.WhenAll(resultModels);
+            var result = await _unitOfWork.CommitAsync();
+            return result > 0 ? returnResults : null;
         }
 
         public async Task<ExpenseManageModel> UpdateAsync(string user, ExpenseManageModel model)

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,11 +18,16 @@ namespace MyExpenses.Controllers
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseService _expenseService;
+        private readonly ILabelService _labelService;
         private readonly IValidateHelper _validateHelper;
 
-        public ExpenseController(IExpenseService labelService, IValidateHelper validateHelper)
+        public ExpenseController(
+            IExpenseService expenseService,
+            ILabelService labelService,
+            IValidateHelper validateHelper)
         {
-            _expenseService = labelService;
+            _expenseService = expenseService;
+            _labelService = labelService;
             _validateHelper = validateHelper;
         }
 
@@ -151,6 +159,69 @@ namespace MyExpenses.Controllers
             }
 
             return Ok();
+        }
+
+        // POST api/expense/import
+        [HttpPost("import")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Import(long group, [FromBody] DataModel data)
+        {
+            var userId = _validateHelper.GetUserId(HttpContext);
+            var labels = await _labelService.GetAllAsync(userId, group);
+            var errors = new List<string>();
+
+            var rows = data.Data.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var models = rows.Select(row =>
+                {
+                    var fields = row.Split(",");
+
+                    DateTime date;
+                    if (!DateTime.TryParseExact(fields[0], "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+                    {
+                        errors.Add($"Date {fields[0]} does not match to dd/mm/yyyy format");
+                    }
+
+                    var name = fields[1];
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        errors.Add($"Label {fields[1]} can not be null or empty");
+                    }
+
+                    var label = labels.FirstOrDefault(l => l.Name.Equals(fields[2]));
+                    if (label == null)
+                    {
+                        errors.Add($"Label {fields[2]} does not exists");
+                    }
+
+                    decimal value;
+                    if (!decimal.TryParse(fields[3], out value))
+                    {
+                        errors.Add($"Value {fields[3]} does not match as a number");
+                    }
+
+                    return new ExpenseAddModel
+                    {
+                        // 0
+                        Date = date,
+                        // 1
+                        Name = name,
+                        // 2
+                        LabelId = label?.Id ?? 0,
+                        // 3
+                        Value = value,
+
+                        GroupId = group
+                    };
+                }
+            ).ToList();
+
+            if (errors.Any())
+            {
+                return BadRequest(errors);
+            }
+
+            var results = await _expenseService.AddAsync(userId, group, models);
+            return Ok(results);
         }
     }
 }

@@ -16,7 +16,9 @@ namespace MyExpenses.Services
         ICollection<LabelGetFullModel> GetAllFull(string user, long group, int month, int year);
         Task<ICollection<LabelGetFullModel>> GetAllFullAsync(string user, long group, int month, int year);
         Task<LabelManageModel> GetByIdAsync(string user, long id);
-        Task<LabelManageModel> AddAsync(string user, long group, LabelAddModel model); Task<LabelManageModel> UpdateAsync(string user, LabelManageModel model);
+        Task<LabelManageModel> AddAsync(string user, long group, LabelAddModel model);
+        Task<ICollection<LabelManageModel>> AddAsync(string user, long group, ICollection<LabelAddModel> models);
+        Task<LabelManageModel> UpdateAsync(string user, LabelManageModel model);
         Task<bool> DeleteAsync(long id);
     }
 
@@ -183,6 +185,32 @@ namespace MyExpenses.Services
             var objAdded = await _repository.AddAsync(objToAdd);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<LabelManageModel>(objAdded) : null;
+        }
+
+        public async Task<ICollection<LabelManageModel>> AddAsync(string user, long group, ICollection<LabelAddModel> models)
+        {
+            var groupModel = await _groupService.GetByIdAsync(group);
+            if (groupModel == null)
+            {
+                throw new KeyNotFoundException(group.ToString());
+            }
+            if (!groupModel.Users.Any(u => u.Id.Equals(user)))
+            {
+                throw new ForbidException();
+            }
+
+            _unitOfWork.BeginTransaction();
+            var resultModels = models.Select(async model =>
+            {
+                var objToAdd = _mapper.Map<LabelModel>(model);
+                objToAdd.GroupId = group;
+
+                var objAdded = await _repository.AddAsync(objToAdd);
+                return _mapper.Map<LabelManageModel>(objAdded);
+            }).ToArray();
+            var returnResults = await Task.WhenAll(resultModels);
+            var result = await _unitOfWork.CommitAsync();
+            return result > 0 ? returnResults : null;
         }
 
         public async Task<LabelManageModel> UpdateAsync(string user, LabelManageModel model)

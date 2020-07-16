@@ -11,6 +11,11 @@ using MyExpenses.Services;
 
 namespace MyExpenses.Controllers
 {
+    public class DataModel
+    {
+        public string Data { get; set; }
+    }
+
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
@@ -166,6 +171,37 @@ namespace MyExpenses.Controllers
             }
 
             return Ok();
+        }
+
+        // POST api/label/import
+        [HttpPost("import")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Import(long group, [FromBody] DataModel data)
+        {
+            var userId = _validateHelper.GetUserId(HttpContext);
+            var errors = new List<string>();
+            var rows = data.Data.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            var models = rows.Select(row =>
+                {
+                    var fields = row.Split(",");
+
+                    var name = fields[0];
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        errors.Add($"Label {fields[0]} can not be null or empty");
+                    }
+
+                    return new LabelAddModel { Name = name };
+                }
+            ).ToList();
+
+            if (errors.Any())
+            {
+                return BadRequest(errors);
+            }
+
+            var results = await _labelService.AddAsync(userId, group, models);
+            return Ok(results);
         }
     }
 }
