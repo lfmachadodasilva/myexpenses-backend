@@ -41,7 +41,7 @@ namespace MyExpenses.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete()
+        public async Task<IActionResult> Delete()
         {
             var userId = _validateHelper.GetUserId(HttpContext);
             if (userId != "13FAoQ4yNNSl7mUJtQgTQpFeWmU2")
