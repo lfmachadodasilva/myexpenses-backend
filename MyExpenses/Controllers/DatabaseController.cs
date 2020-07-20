@@ -23,18 +23,12 @@ namespace MyExpenses.Controllers
         [HttpGet("migrate")]
         public async Task<IActionResult> Migrate()
         {
-            var userId = _validateHelper.GetUserId(HttpContext);
-            if (userId != "13FAoQ4yNNSl7mUJtQgTQpFeWmU2")
-            {
-                return Forbid();
-            }
-
             await _context.Database.MigrateAsync();
             return Ok();
         }
 
         [HttpGet("seed")]
-        public async Task<IActionResult> Seed()
+        public IActionResult Seed()
         {
             var userId = _validateHelper.GetUserId(HttpContext);
             if (userId != "13FAoQ4yNNSl7mUJtQgTQpFeWmU2")
@@ -47,7 +41,7 @@ namespace MyExpenses.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete()
+        public IActionResult Delete()
         {
             var userId = _validateHelper.GetUserId(HttpContext);
             if (userId != "13FAoQ4yNNSl7mUJtQgTQpFeWmU2")

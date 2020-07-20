@@ -16,6 +16,17 @@ namespace MyExpenses
 
         public void Run()
         {
+            if (_context.Users.Any() &&
+                _context.Groups.Any() &&
+                _context.GroupUser.Any() &&
+                _context.Labels.Any() &&
+                _context.Expenses.Any())
+            {
+                // only add seed if all tables are empty
+                // this will protect to add duplicate rows
+                return;
+            }
+
             var users = AddUsers();
             var groups = AddGroups();
             AddUserGroup(users, groups);
@@ -30,18 +41,33 @@ namespace MyExpenses
                 {
                     new UserModel
                     {
-                        //Id = 1,
+                        Id = "prCSRxTzTyRjaeDr9SzlvY6gAEi2",
+                        DisplayName = "Luiz Felipe Machado da Silva",
+                        Email = "silvaaavlis@gmail.com"
+                    },
+                    new UserModel
+                    {
+                        Id = "13FAoQ4yNNSl7mUJtQgTQpFeWmU2",
+                        DisplayName = "User",
+                        Email = "user@test.com"
+                    },
+                    new UserModel
+                    {
+                        Id = "1",
                         DisplayName = "UserName1",
+                        Email = "user1@test.com"
                     },
                     new UserModel
                     {
-                        //Id = 2,
+                        Id = "2",
                         DisplayName = "UserName2",
+                        Email = "user2@test.com"
                     },
                     new UserModel
                     {
-                        //Id = 3,
+                        Id = "3",
                         DisplayName = "UserName3",
+                        Email = "user3@test.com"
                     }
                 };
 
@@ -88,15 +114,20 @@ namespace MyExpenses
 
         private void AddUserGroup(IEnumerable<UserModel> users, IEnumerable<GroupModel> groups)
         {
-            var user = users.FirstOrDefault();
+            var user1 = users.ElementAt(0);
+            var user2 = users.ElementAt(1);
             foreach (var group in groups)
             {
-                var userGroup = new GroupUserModel
+                _context.Add(new GroupUserModel
                 {
-                    UserId = user.Id,
+                    UserId = user1.Id,
                     GroupId = group.Id
-                };
-                _context.Add(userGroup);
+                });
+                _context.Add(new GroupUserModel
+                {
+                    UserId = user2.Id,
+                    GroupId = group.Id
+                });
                 var result = _context.SaveChanges();
                 //Console.WriteLine($"result: {result}");
             }

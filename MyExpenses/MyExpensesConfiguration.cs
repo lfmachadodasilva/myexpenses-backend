@@ -33,29 +33,28 @@ namespace MyExpenses
 
             service.AddAutoMapper(typeof(MyExpensesProfile));
 
+            var appConfig = configuration.GetSection("AppConfig").Get<AppConfig>() ?? new AppConfig();
             service.Configure<AppConfig>(configuration.GetSection("AppConfig"));
 
-            var useInMemoryDatabase = configuration.GetSection("AppConfig:UseInMemoryDatabase").Value;
-            if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
+            if (appConfig.UseInMemoryDatabase)
+            {
+                service
+                    .AddDbContext<MyExpensesContext>(options =>
+                        options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            }
+            else
             {
                 var migrationAssembly = configuration.GetSection("MigrationAssembly").Value;
                 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
                 if (string.IsNullOrEmpty(connectionString))
                 {
-                    var connectionStringName = configuration.GetSection("AppConfig:ConnectionString").Value;
-                    connectionString = configuration.GetConnectionString(connectionStringName);
+                    connectionString = configuration.GetConnectionString(appConfig.ConnectionString);
                 }
 
                 service
                     .AddDbContext<MyExpensesContext>(options =>
                         options.UseNpgsql(connectionString,
                             x => x.MigrationsAssembly(migrationAssembly)));
-            }
-            else
-            {
-                service
-                    .AddDbContext<MyExpensesContext>(options =>
-                        options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
             }
 
             service
@@ -79,9 +78,9 @@ namespace MyExpenses
 
         public static IApplicationBuilder DatabaseMigrate(this IApplicationBuilder app, IConfiguration configuration)
         {
-            var useInMemoryDatabase = configuration.GetSection("AppConfig:UseInMemoryDatabase").Value;
+            var appConfig = configuration.GetSection("AppConfig").Get<AppConfig>() ?? new AppConfig();
 
-            if (useInMemoryDatabase != null && useInMemoryDatabase == false.ToString())
+            if (!appConfig.UseInMemoryDatabase)
             {
                 using (var serviceScope = app.ApplicationServices
                     .GetRequiredService<IServiceScopeFactory>()
@@ -95,8 +94,7 @@ namespace MyExpenses
                 }
             }
 
-            var clearDatabaseAndSeedData = configuration.GetSection("AppConfig:ClearDatabaseAndSeedData").Value;
-            if (clearDatabaseAndSeedData != null && clearDatabaseAndSeedData == true.ToString())
+            if (appConfig.ClearDatabaseAndSeedData)
             {
                 using (var serviceScope = app.ApplicationServices
                     .GetRequiredService<IServiceScopeFactory>()

@@ -14,7 +14,6 @@ namespace MyExpenses.Services
     {
         Task<ICollection<LabelManageModel>> GetAllAsync(string user, long group);
         ICollection<LabelGetFullModel> GetAllFull(string user, long group, int month, int year);
-        Task<ICollection<LabelGetFullModel>> GetAllFullAsync(string user, long group, int month, int year);
         Task<LabelManageModel> GetByIdAsync(string user, long id);
         Task<LabelManageModel> AddAsync(string user, long group, LabelAddModel model);
         Task<ICollection<LabelManageModel>> AddAsync(string user, long group, ICollection<LabelAddModel> models);
@@ -52,55 +51,6 @@ namespace MyExpenses.Services
                 .OrderBy(x => x.Name);
 
             return _mapper.Map<ICollection<LabelManageModel>>(results);
-        }
-
-        public async Task<ICollection<LabelGetFullModel>> GetAllFullAsync(string user, long group, int month, int year)
-        {
-            // var firstDay = new DateTime(year, month, 1);
-
-            var models = await _repository.GetAllAsync(x => x.Group);
-            // var labelsThisMonth = await _expenseService.GetValuesByLabel(
-            //     user, group, firstDay, firstDay.AddMonths(1).AddDays(-1));
-            // var labelsLastMonth = await _expenseService.GetValuesByLabel(
-            //     user, group, firstDay.AddMonths(-1), firstDay.AddDays(-1));
-            // var labelsAverage = await _expenseService.GetValuesByLabel(
-            //     user, group, firstDay.AddYears(-100), firstDay.AddDays(-1));
-
-            // var modelsTasks = _repository.GetAllAsync(x => x.Group);
-            // var labelsThisMonthTask = _expenseService.GetValuesByLabel(
-            //     user, group, firstDay, firstDay.AddMonths(1).AddDays(-1));
-            // var labelsLastMonthTask = _expenseService.GetValuesByLabel(
-            //     user, group, firstDay.AddMonths(-1), firstDay.AddDays(-1));
-            // var labelsAverageTask = _expenseService.GetValuesByLabel(
-            //     user, group, firstDay.AddDays(-1), firstDay.AddDays(-1));
-
-            // Task.WaitAll(modelsTasks, labelsThisMonthTask, labelsLastMonthTask, labelsAverageTask);
-
-            // var models = await modelsTasks;
-            // var labelsThisMonth = await labelsThisMonthTask;
-            // var labelsLastMonth = await labelsLastMonthTask;
-            // var labelsAverage = await labelsAverageTask;
-
-            var groupId = group;
-
-            var results =
-                from label in models
-                where label.GroupId == groupId && label.Group.GroupUser.Any(gu => gu.UserId.Equals(user))
-                // join thisMonth in labelsThisMonth on label.Id equals thisMonth.Id into intoThisMonth
-                // join lastMonth in labelsLastMonth on label.Id equals lastMonth.Id into intoLastMonth
-                // join average in labelsAverage on label.Id equals average.Id into intoAverage
-                // from itm in intoThisMonth.DefaultIfEmpty()
-                // from ilm in intoLastMonth.DefaultIfEmpty()
-                // from ia in intoAverage.DefaultIfEmpty()
-                select new LabelGetFullModel
-                {
-                    Id = label.Id,
-                    Name = label.Name,
-                    // CurrValue = itm == null ? 0 : itm.Value,
-                    // LastValue = ilm == null ? 0 : ilm.Value,
-                    // AvgValue = ia == null ? 0 : ia.Value,
-                };
-            return results.ToList();
         }
 
         public ICollection<LabelGetFullModel> GetAllFull(string user, long group, int month, int year)
