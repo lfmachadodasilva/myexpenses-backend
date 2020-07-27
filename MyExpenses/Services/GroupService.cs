@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using MyExpenses.Helpers;
 using MyExpenses.Models;
 using MyExpenses.Repositories;
 
@@ -9,12 +10,12 @@ namespace MyExpenses.Services
 {
     public interface IGroupService
     {
-        Task<ICollection<GroupGetModel>> GetAllAsync(string userId);
-        Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string userId);
-        Task<GroupGetFullModel> GetByIdAsync(long id);
-        Task<GroupManageModel> AddAsync(GroupAddModel model);
-        Task<GroupManageModel> UpdateAsync(GroupManageModel model);
-        Task<bool> DeleteAsync(long id);
+        Task<ICollection<GroupGetModel>> GetAllAsync(string user);
+        Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string user);
+        Task<GroupGetFullModel> GetByIdAsync(long id, string user);
+        Task<GroupManageModel> AddAsync(GroupAddModel model, string user);
+        Task<GroupManageModel> UpdateAsync(GroupManageModel model, string user);
+        Task<bool> DeleteAsync(long id, string user);
     }
 
     public class GroupService : IGroupService
@@ -30,52 +31,52 @@ namespace MyExpenses.Services
             _mapper = mapper;
         }
 
-        public async Task<ICollection<GroupGetModel>> GetAllAsync(string userId)
+        public async Task<ICollection<GroupGetModel>> GetAllAsync(string user)
         {
             var models = await _repository.GetAllAsync();
             var results = models
-                .Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)))
+                .Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(user)))
                 .OrderBy(g => g.Name);
 
             return _mapper.Map<ICollection<GroupGetModel>>(results);
         }
 
-        public async Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string userId)
+        public async Task<ICollection<GroupGetFullModel>> GetAllFullAsync(string user)
         {
             var models = await _repository.GetAllAsync();
             var results = models
-                .Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(userId)))
+                .Where(g => g.GroupUser.Any(gu => gu.UserId.Equals(user)))
                 .OrderBy(g => g.Name);
 
             return _mapper.Map<ICollection<GroupGetFullModel>>(results);
         }
 
-        public async Task<GroupGetFullModel> GetByIdAsync(long id)
+        public async Task<GroupGetFullModel> GetByIdAsync(long id, string user)
         {
             var model = await _repository.GetByIdAsync(id);
             return _mapper.Map<GroupGetFullModel>(model);
         }
 
-        public async Task<GroupManageModel> AddAsync(GroupAddModel model)
+        public async Task<GroupManageModel> AddAsync(GroupAddModel model, string user)
         {
             _unitOfWork.BeginTransaction();
-            var addedModel = await _repository.AddAsync(_mapper.Map<GroupModel>(model));
+            var addedModel = await _repository.AddAsync(_mapper.Map<GroupModel>(model), user);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<GroupManageModel>(addedModel) : null;
         }
 
-        public async Task<GroupManageModel> UpdateAsync(GroupManageModel model)
+        public async Task<GroupManageModel> UpdateAsync(GroupManageModel model, string user)
         {
             _unitOfWork.BeginTransaction();
-            var updatedModel = await _repository.UpdateAsync(_mapper.Map<GroupModel>(model));
+            var updatedModel = await _repository.UpdateAsync(_mapper.Map<GroupModel>(model), user);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<GroupManageModel>(updatedModel) : null;
         }
 
-        public async Task<bool> DeleteAsync(long id)
+        public async Task<bool> DeleteAsync(long id, string user)
         {
             _unitOfWork.BeginTransaction();
-            var deleted = await _repository.DeleteAsync(id);
+            var deleted = await _repository.DeleteAsync(id, user);
             if (!deleted)
             {
                 return false;

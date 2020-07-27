@@ -46,8 +46,7 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> GetAllFull(long group, int month, int year)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
-            var results = _labelService.GetAllFull(userId, group, month, year);
-
+            var results = await _labelService.GetAllFullAsync(userId, group, month, year);
             return Ok(results);
         }
 
@@ -140,22 +139,21 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
+
             try
             {
-                var result = await _labelService.GetByIdAsync(userId, id);
-                if (result == null)
+                if (!await _labelService.DeleteAsync(userId, id))
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
             }
             catch (ForbidException)
             {
                 return Forbid();
             }
-
-            if (!await _labelService.DeleteAsync(id))
+            catch (KeyNotFoundException)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok();

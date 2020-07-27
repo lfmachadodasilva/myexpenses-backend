@@ -1,13 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace MyExpenses.Models
 {
-    [Table(ModelConstants.TableLabel)]
-    public class LabelModel : ModelBaseNumber
+    public interface ILabelFields
     {
+        string Name { get; set; }
+
+        string Icon { get; set; }
+    }
+
+    [Table(ModelConstants.TableLabel)]
+    public class LabelModel : ModelBase, ILabelFields
+    {
+        [Required]
         public string Name { get; set; }
+
+        public string Icon { get; set; }
 
         #region Relations
 
@@ -25,27 +37,39 @@ namespace MyExpenses.Models
         {
             Expenses = new List<ExpenseModel>();
         }
+
+        public override bool CheckIfIsForbidden(string user)
+        {
+            return Group != null && !Group.GroupUser.Any(gu => gu.UserId.Equals(user));
+        }
     }
 
-    public class LabelValueModel : ModelBaseNumber
-    {
-        public decimal Value { get; set; }
-    }
-
-    public class LabelAddModel
-    {
-        [Required]
-        public string Name { get; set; }
-    }
-
-    public class LabelManageModel : ModelBaseNumber
+    public class LabelAddModel : ILabelFields
     {
         [Required]
         public string Name { get; set; }
+
+        public string Icon { get; set; }
     }
 
-    public class LabelGetFullModel : LabelManageModel
+    public class LabelManageModel : IModel<long>, ILabelFields
     {
+        [Required]
+        public long Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        public string Icon { get; set; }
+    }
+
+    public class LabelGetFullModel : ModelBase, ILabelFields
+    {
+        [Required]
+        public string Name { get; set; }
+
+        public string Icon { get; set; }
+
         public decimal CurrValue { get; set; }
 
         public decimal LastValue { get; set; }

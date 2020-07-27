@@ -13,32 +13,29 @@ namespace MyExpenses.Services
     public interface ILabelService
     {
         Task<ICollection<LabelManageModel>> GetAllAsync(string user, long group);
-        ICollection<LabelGetFullModel> GetAllFull(string user, long group, int month, int year);
+        Task<List<LabelGetFullModel>> GetAllFullAsync(string user, long group, int month, int year);
         Task<LabelManageModel> GetByIdAsync(string user, long id);
         Task<LabelManageModel> AddAsync(string user, long group, LabelAddModel model);
         Task<ICollection<LabelManageModel>> AddAsync(string user, long group, ICollection<LabelAddModel> models);
         Task<LabelManageModel> UpdateAsync(string user, LabelManageModel model);
-        Task<bool> DeleteAsync(long id);
+        Task<bool> DeleteAsync(string user, long id);
     }
 
     public class LabelService : ILabelService
     {
         private readonly ILabelRepository _repository;
         private readonly IGroupService _groupService;
-        // private readonly IExpenseService _expenseService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public LabelService(
             ILabelRepository repository,
             IGroupService groupService,
-            // IExpenseService expenseService,
             IUnitOfWork unitOfWork,
             IMapper mapper)
         {
             _repository = repository;
             _groupService = groupService;
-            // _expenseService = expenseService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
@@ -53,7 +50,7 @@ namespace MyExpenses.Services
             return _mapper.Map<ICollection<LabelManageModel>>(results);
         }
 
-        public ICollection<LabelGetFullModel> GetAllFull(string user, long group, int month, int year)
+        public Task<List<LabelGetFullModel>> GetAllFullAsync(string user, long group, int month, int year)
         {
             var currMonthStart = new DateTime(year, month, 1);
             var currMonthEnd = currMonthStart.AddMonths(1).AddDays(-1);
@@ -65,10 +62,13 @@ namespace MyExpenses.Services
             var averageEnd = currMonthStart.AddDays(-1);
 
             var models = _repository.GetAll()
+
                 .Include(l => l.Group)
                     .ThenInclude(l => l.GroupUser)
                 .Include(l => l.Expenses)
+
                 .Where(l => l.GroupId.Equals(group) && l.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
+
                 .Select(l => new LabelGetFullModel
                 {
                     Id = l.Id,
@@ -98,7 +98,8 @@ namespace MyExpenses.Services
                                     .Average() :
                                 0
                 });
-            return models.ToList();
+
+            return models.ToListAsync();
         }
 
         public async Task<LabelManageModel> GetByIdAsync(string user, long id)
@@ -118,7 +119,7 @@ namespace MyExpenses.Services
                 return null;
             }
 
-            var groupModel = await _groupService.GetByIdAsync(group);
+            var groupModel = await _groupService.GetByIdAsync(group, user);
             if (groupModel == null)
             {
                 throw new KeyNotFoundException(group.ToString());
@@ -132,14 +133,14 @@ namespace MyExpenses.Services
             objToAdd.GroupId = group;
 
             _unitOfWork.BeginTransaction();
-            var objAdded = await _repository.AddAsync(objToAdd);
+            var objAdded = await _repository.AddAsync(objToAdd, user);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<LabelManageModel>(objAdded) : null;
         }
 
         public async Task<ICollection<LabelManageModel>> AddAsync(string user, long group, ICollection<LabelAddModel> models)
         {
-            var groupModel = await _groupService.GetByIdAsync(group);
+            var groupModel = await _groupService.GetByIdAsync(group, user);
             if (groupModel == null)
             {
                 throw new KeyNotFoundException(group.ToString());
@@ -155,7 +156,7 @@ namespace MyExpenses.Services
                 var objToAdd = _mapper.Map<LabelModel>(model);
                 objToAdd.GroupId = group;
 
-                var objAdded = await _repository.AddAsync(objToAdd);
+                var objAdded = await _repository.AddAsync(objToAdd, user);
                 return _mapper.Map<LabelManageModel>(objAdded);
             }).ToArray();
             var returnResults = await Task.WhenAll(resultModels);
@@ -170,29 +171,21 @@ namespace MyExpenses.Services
                 return null;
             }
 
-            var labelModel = await _repository.GetByIdAsync(model.Id, true);
-            if (labelModel == null)
-            {
-                throw new KeyNotFoundException(model.Id.ToString());
-            }
-            if (!labelModel.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
-            {
-                throw new ForbidException();
-            }
-
             var objToUpdate = _mapper.Map<LabelModel>(model);
+
+            var labelModel = await _repository.GetByIdAsync(model.Id, true);
             objToUpdate.GroupId = labelModel.GroupId;
 
             _unitOfWork.BeginTransaction();
-            var updatedModel = await _repository.UpdateAsync(objToUpdate);
+            var updatedModel = await _repository.UpdateAsync(objToUpdate, labelModel, user);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<LabelManageModel>(updatedModel) : null;
         }
 
-        public async Task<bool> DeleteAsync(long id)
+        public async Task<bool> DeleteAsync(string user, long id)
         {
             _unitOfWork.BeginTransaction();
-            var deleted = await _repository.DeleteAsync(id);
+            var deleted = await _repository.DeleteAsync(id, user);
             if (!deleted)
             {
                 return false;

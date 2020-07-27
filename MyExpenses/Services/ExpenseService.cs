@@ -17,9 +17,7 @@ namespace MyExpenses.Services
         Task<ExpenseManageModel> AddAsync(string user, ExpenseAddModel model);
         Task<ICollection<ExpenseManageModel>> AddAsync(string user, long group, ICollection<ExpenseAddModel> models);
         Task<ExpenseManageModel> UpdateAsync(string user, ExpenseManageModel model);
-        Task<bool> DeleteAsync(long id);
-
-        // Task<ICollection<LabelValueModel>> GetValuesByLabel(string user, long group, DateTime start, DateTime end);
+        Task<bool> DeleteAsync(string user, long id);
     }
 
     public class ExpenseService : IExpenseService
@@ -97,14 +95,14 @@ namespace MyExpenses.Services
             var objToAdd = _mapper.Map<ExpenseModel>(model);
 
             _unitOfWork.BeginTransaction();
-            var objAdded = await _repository.AddAsync(objToAdd);
+            var objAdded = await _repository.AddAsync(objToAdd, user);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<ExpenseManageModel>(objAdded) : null;
         }
 
         public async Task<ICollection<ExpenseManageModel>> AddAsync(string user, long group, ICollection<ExpenseAddModel> models)
         {
-            var groupModel = await _groupService.GetByIdAsync(group);
+            var groupModel = await _groupService.GetByIdAsync(group, user);
             if (groupModel == null)
             {
                 throw new KeyNotFoundException(group.ToString());
@@ -120,7 +118,7 @@ namespace MyExpenses.Services
                 var objToAdd = _mapper.Map<ExpenseModel>(model);
                 objToAdd.GroupId = group;
 
-                var objAdded = await _repository.AddAsync(objToAdd);
+                var objAdded = await _repository.AddAsync(objToAdd, user);
                 return _mapper.Map<ExpenseManageModel>(objAdded);
             }).ToArray();
             var returnResults = await Task.WhenAll(resultModels);
@@ -145,15 +143,15 @@ namespace MyExpenses.Services
             var objToUpdate = _mapper.Map<ExpenseModel>(model);
 
             _unitOfWork.BeginTransaction();
-            var updatedModel = await _repository.UpdateAsync(objToUpdate);
+            var updatedModel = await _repository.UpdateAsync(objToUpdate, user);
             var result = await _unitOfWork.CommitAsync();
             return result > 0 ? _mapper.Map<ExpenseManageModel>(updatedModel) : null;
         }
 
-        public async Task<bool> DeleteAsync(long id)
+        public async Task<bool> DeleteAsync(string user, long id)
         {
             _unitOfWork.BeginTransaction();
-            var deleted = await _repository.DeleteAsync(id);
+            var deleted = await _repository.DeleteAsync(id, user);
             if (!deleted)
             {
                 return false;

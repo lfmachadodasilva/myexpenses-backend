@@ -12,8 +12,8 @@ services:
         networks:
             - my-network
     db:
-        #image: images.artifactory.dunnhumby.com/postgres:12
-        image: postgres:12
+        image: images.artifactory.dunnhumby.com/postgres:12
+        #image: postgres:12
         environment:
             POSTGRES_DB: myexpenses
             POSTGRES_USER: postgres

@@ -52,7 +52,7 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> Get(long id)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
-            var result = await _groupService.GetByIdAsync(id);
+            var result = await _groupService.GetByIdAsync(id, userId);
             if (result == null)
             {
                 return NotFound();
@@ -76,7 +76,7 @@ namespace MyExpenses.Controllers
                 return Forbid();
             }
 
-            var model = await _groupService.AddAsync(value);
+            var model = await _groupService.AddAsync(value, userId);
             if (model == null)
             {
                 return BadRequest();
@@ -99,7 +99,7 @@ namespace MyExpenses.Controllers
 
             try
             {
-                var model = await _groupService.UpdateAsync(value);
+                var model = await _groupService.UpdateAsync(value, userId);
                 if (model == null)
                 {
                     return BadRequest();
@@ -120,20 +120,22 @@ namespace MyExpenses.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(long id)
         {
-            var result = await _groupService.GetByIdAsync(id);
-            if (result == null)
-            {
-                return NotFound();
-            }
             var userId = _validateHelper.GetUserId(HttpContext);
-            if (!result.Users.Any(gu => gu.Id.Equals(userId)))
+
+            try
+            {
+                if (!await _groupService.DeleteAsync(id, userId))
+                {
+                    return BadRequest();
+                }
+            }
+            catch (ForbidException)
             {
                 return Forbid();
             }
-
-            if (!await _groupService.DeleteAsync(id))
+            catch (KeyNotFoundException)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok();

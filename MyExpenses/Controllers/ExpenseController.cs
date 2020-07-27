@@ -140,22 +140,21 @@ namespace MyExpenses.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             var userId = _validateHelper.GetUserId(HttpContext);
+
             try
             {
-                var result = await _expenseService.GetByIdAsync(userId, id);
-                if (result == null)
+                if (!await _labelService.DeleteAsync(userId, id))
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
             }
             catch (ForbidException)
             {
                 return Forbid();
             }
-
-            if (!await _expenseService.DeleteAsync(id))
+            catch (KeyNotFoundException)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok();

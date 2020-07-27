@@ -25,7 +25,7 @@ namespace MyExpenses.Repositories
         public override Task<List<GroupModel>> GetAllAsync(params Expression<Func<GroupModel, object>>[] includes)
         {
             //_logger.LogInformation("get all");
-            return _context.Groups
+            return GetAll()
                 .Include(g => g.GroupUser)
                     .ThenInclude(gu => gu.User)
                 .ToListAsync();
@@ -34,9 +34,11 @@ namespace MyExpenses.Repositories
         public override Task<GroupModel> GetByIdAsync(long id, bool include)
         {
             //_logger.LogInformation("get all");
-            return _context.Groups
+            return GetAll()
                 .Include(g => g.GroupUser)
                     .ThenInclude(gu => gu.User)
+                .Include(l => l.CreatedBy)
+                .Include(l => l.UpdatedBy)
                 .FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
     }

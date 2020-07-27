@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyExpenses.Helpers;
 using MyExpenses.Models;
 
 namespace MyExpenses.Repositories
@@ -46,29 +47,34 @@ namespace MyExpenses.Repositories
         /// Update
         /// </summary>
         /// <param name="model">model to be updated</param>
+        /// <param name="user">user id <see href="ICreatedUpdatedModel" /></param>
         /// <returns>model updated</returns>
-        Task<TModel> UpdateAsync(TModel model);
+        Task<TModel> UpdateAsync(TModel model, string user);
+        Task<TModel> UpdateAsync(TModel from, TModel to, string user);
 
         /// <summary>
         /// Add
         /// </summary>
         /// <param name="model">model to be added</param>
+        /// <param name="user">user id <see href="ICreatedUpdatedModel" /></param>
         /// <returns>model added</returns>
-        Task<TModel> AddAsync(TModel model);
+        Task<TModel> AddAsync(TModel model, string user);
 
         /// <summary>
         /// Add or update
         /// </summary>
         /// <param name="model">model to be added or updated</param>
+        /// <param name="user">user id <see href="ICreatedUpdatedModel" /></param>
         /// <returns>model added or updated</returns>
-        Task<TModel> AddOrUpdateAsync(TModel model);
+        Task<TModel> AddOrUpdateAsync(TModel model, string user = null);
 
         /// <summary>
         /// Delete
         /// </summary>
         /// <param name="id">id</param>
+        /// <param name="user">user id, only allow to delete if was created by</param>
         /// <returns>True if was removed and false otherwise</returns>
-        Task<bool> DeleteAsync(TModelType id);
+        Task<bool> DeleteAsync(TModelType id, string user);
     }
 
     /// <inheritdoc />
@@ -127,7 +133,7 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<TModel> UpdateAsync(TModel model)
+        public virtual async Task<TModel> UpdateAsync(TModel model, string user)
         {
             if (model == null)
             {
@@ -142,21 +148,82 @@ namespace MyExpenses.Repositories
                 throw new KeyNotFoundException();
             }
 
+            if (model is IModelValidate modelValidate)
+            {
+                if (modelValidate.CheckIfIsForbidden(user))
+                {
+                    throw new ForbidException("FORBIT_ACCESS");
+                }
+            }
+
+            if (model is ICreatedUpdatedModel createdUpdated)
+            {
+                createdUpdated.Updated = DateTime.Now;
+                createdUpdated.UpdatedById = user;
+                // change back
+                model = createdUpdated as TModel;
+            }
+
             // copy attributes
             _mapper.Map<TModel, TModel>(model, existModel);
-
-            //_logger.LogInformation($"updated: {model.Id}");
 
             return existModel;
         }
 
         /// <inheritdoc />
-        public virtual async Task<TModel> AddAsync(TModel model)
+        public virtual async Task<TModel> UpdateAsync(TModel from, TModel to, string user)
+        {
+            if (from == null)
+            {
+                //_logger.LogInformation($"update: {model.Id} does not exists");
+                throw new KeyNotFoundException();
+            }
+
+            if (from is IModelValidate modelValidate)
+            {
+                if (modelValidate.CheckIfIsForbidden(user))
+                {
+                    throw new ForbidException("FORBIT_ACCESS");
+                }
+            }
+
+            if (from is ICreatedUpdatedModel createdUpdated)
+            {
+                createdUpdated.Updated = DateTime.Now;
+                createdUpdated.UpdatedById = user;
+                // change back
+                from = createdUpdated as TModel;
+            }
+
+            // copy attributes
+            _mapper.Map<TModel, TModel>(from, to);
+
+            return to;
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TModel> AddAsync(TModel model, string user)
         {
             if (model == null)
             {
                 //_logger.LogInformation("add: null object to update");
                 return null;
+            }
+
+            if (model is IModelValidate modelValidate)
+            {
+                if (modelValidate.CheckIfIsForbidden(user))
+                {
+                    throw new ForbidException("FORBIT_ACCESS");
+                }
+            }
+
+            if (model is ICreatedUpdatedModel createdUpdated)
+            {
+                createdUpdated.Created = DateTime.Now;
+                createdUpdated.UpdatedById = user;
+                // change back
+                model = createdUpdated as TModel;
             }
 
             var models = _context.Set<TModel>();
@@ -168,7 +235,7 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<TModel> AddOrUpdateAsync(TModel model)
+        public virtual async Task<TModel> AddOrUpdateAsync(TModel model, string user = null)
         {
             if (model == null)
             {
@@ -180,7 +247,26 @@ namespace MyExpenses.Repositories
             if (existModel == null)
             {
                 //_logger.LogInformation($"update: {model.Id} does not exists");
-                return await AddAsync(model);
+                return await AddAsync(model, user);
+            }
+
+            if (string.IsNullOrEmpty(user) && model is IModelValidate modelValidate)
+            {
+                if (modelValidate.CheckIfIsForbidden(user))
+                {
+                    throw new ForbidException("FORBIT_ACCESS");
+                }
+            }
+
+            if (model is ICreatedUpdatedModel createdUpdated)
+            {
+                createdUpdated.Updated = DateTime.Now;
+                if (string.IsNullOrEmpty(user))
+                {
+                    createdUpdated.UpdatedById = user;
+                }
+                // change back
+                model = createdUpdated as TModel;
             }
 
             // copy attributes
@@ -192,13 +278,27 @@ namespace MyExpenses.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> DeleteAsync(TModelType id)
+        public virtual async Task<bool> DeleteAsync(TModelType id, string user)
         {
             TModel model = await GetByIdAsync(id);
             if (model == null)
             {
                 //_logger.LogInformation($"delete: {id} does not exists");
                 throw new KeyNotFoundException();
+            }
+            if (model is IModelValidate modelValidate)
+            {
+                if (modelValidate.CheckIfIsForbidden(user))
+                {
+                    throw new ForbidException("FORBIT_ACCESS");
+                }
+            }
+            if (model is ICreatedUpdatedModel createdUpdated)
+            {
+                if (!createdUpdated.CreatedById.Equals(user))
+                {
+                    throw new ForbidException("FORBIT_DELETE");
+                }
             }
 
             var result = _context.Remove(model) != null;

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyExpenses.Models
@@ -8,16 +9,42 @@ namespace MyExpenses.Models
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
         T Id { get; set; }
     }
 
-    public class ModelBaseNumber : IModel<long>
+    public interface IModelValidate
+    {
+        bool CheckIfIsForbidden(string user);
+    }
+
+    public class ModelBase : IModel<long>, ICreatedUpdatedModel, IModelValidate
     {
         /// <inheritdoc />
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
+
+        #region Created by
+        [NotMapped]
+        public string CreatedById { get; set; }
+        [NotMapped]
+        [ForeignKey(ModelConstants.ForeignKeyGroup)]
+        public UserModel CreatedBy { get; set; }
+        [NotMapped]
+        public DateTime Created { get; set; }
+        #endregion
+
+        #region Updated by
+        [NotMapped]
+        public string UpdatedById { get; set; }
+        [NotMapped]
+        [ForeignKey(ModelConstants.ForeignKeyGroup)]
+        public UserModel UpdatedBy { get; set; }
+        [NotMapped]
+        public DateTime Updated { get; set; }
+        #endregion
+
+        public virtual bool CheckIfIsForbidden(string user) => false;
     }
 
     public class ModelBaseString : IModel<string>
