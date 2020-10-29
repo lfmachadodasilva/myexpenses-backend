@@ -11,6 +11,7 @@ namespace MyExpenses.Services
 {
     public interface IExpenseService
     {
+        Task<ICollection<int>> GetAllYearsAsync(string user, long group);
         Task<ICollection<ExpenseManageModel>> GetAllAsync(string user, long group);
         Task<ICollection<ExpenseFullModel>> GetAllFullAsync(string user, long group, int month, int year);
         Task<ExpenseManageModel> GetByIdAsync(string user, long id);
@@ -42,6 +43,18 @@ namespace MyExpenses.Services
             _labelService = labelService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+        }
+
+        public async Task<ICollection<int>> GetAllYearsAsync(string user, long group)
+        {
+            var models = await _repository.GetAllAsync();
+            var results = models
+                .Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
+                .GroupBy(x => x.Date.Year)
+                .Select(x => x.FirstOrDefault())
+                .OrderBy(x => x);
+
+            return _mapper.Map<ICollection<int>>(results);
         }
 
         public async Task<ICollection<ExpenseManageModel>> GetAllAsync(string user, long group)

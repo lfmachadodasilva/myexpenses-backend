@@ -32,6 +32,16 @@ namespace MyExpenses.Controllers
         }
 
         // GET api/expense
+        [HttpGet("years")]
+        [ProducesResponseType(typeof(ICollection<int>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllYears(long group)
+        {
+            var userId = _validateHelper.GetUserId(HttpContext);
+            var results = await _expenseService.GetAllYearsAsync(userId, group);
+            return Ok(results);
+        }
+
+        // GET api/expense
         [HttpGet]
         [ProducesResponseType(typeof(ICollection<ExpenseManageModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(long group)
