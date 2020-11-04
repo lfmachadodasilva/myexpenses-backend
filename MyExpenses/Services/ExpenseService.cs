@@ -50,8 +50,8 @@ namespace MyExpenses.Services
             var models = await _repository.GetAllAsync();
             var results = models
                 .Where(g => g.GroupId.Equals(group) && g.Group.GroupUser.Any(gu => gu.UserId.Equals(user)))
-                .GroupBy(x => x.Date.Year)
-                .Select(x => x.FirstOrDefault())
+                .Select(x => x.Date.Year)
+                .Distinct()
                 .OrderBy(x => x);
 
             return _mapper.Map<ICollection<int>>(results);

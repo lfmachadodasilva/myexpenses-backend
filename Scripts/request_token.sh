@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_KEY='AIzaSyAVfjm2M_d7mmVbD4kOwVWxp57CQZV8jqQ'
+PROJECT_KEY='AIzaSyDMDE7eTQbjwkQglMJf5KnFtMr48-pAoVM'
 EMAIL='user@test.com'
 PASSWORD='testtest'
 
