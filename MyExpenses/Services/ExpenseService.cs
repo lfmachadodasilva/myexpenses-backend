@@ -76,7 +76,7 @@ namespace MyExpenses.Services
             var results = models
                 .Where(x =>
                     x.GroupId.Equals(group) && x.Group.GroupUser.Any(gu => gu.UserId.Equals(user) &&
-                    DateTime.Compare(x.Date, firstDay) > 0 && DateTime.Compare(x.Date, lastDay) < 0))
+                    DateTime.Compare(x.Date, firstDay) >= 0 && DateTime.Compare(x.Date, lastDay) <= 0))
                 .OrderBy(x => x.Date).ThenBy(x => x.Name);
 
             return _mapper.Map<ICollection<ExpenseFullModel>>(results);
