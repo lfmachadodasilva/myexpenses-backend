@@ -31,6 +31,8 @@ namespace MyExpenses
                                 "http://localhost:4200",
                                 "https://localhost:4200",
                                 "https://lfmachadodasilva-dev.web.app",
+                                "https://myexpenses-web-dev.herokuapp.com",
+                                "https://myexpenses-web.herokuapp.com",
                                 "https://myexpenses-ui-dev.herokuapp.com",
                                 "https://myexpenses-ui.herokuapp.com")
                             .AllowAnyMethod()
